@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Môj Wellness Denník</title>
+    
+    <!-- GOOGLE CONSENT MODE V2 (Prísne EÚ GDPR) -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      
+      // Predvolene ZAKÁŽEME analytiku, kým používateľ neklikne na Súhlasím
+      gtag('consent', 'default', {
+        'analytics_storage': 'denied',
+        'ad_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied'
+      });
+    </script>
+    
+    <!-- GOOGLE ANALYTICS (Nahraď G-TVOJE_ID_TU tvojím reálnym číslom) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-TVOJE_ID_TU"></script>
+    <script>
+      gtag('js', new Date());
+      gtag('config', 'G-TVOJE_ID_TU');
+    </script>
+    <!-- KONIEC GOOGLE ANALYTICS -->
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --rose:     #f9a8c9;
+            --peach:    #fbc4a0;
+            --lavender: #d4b8e0;
+            --cream:    #fff8f3;
+            --text:     #4a4a4a;
+            --gold:     #eab308;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: var(--cream);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        h1, h2, h3 { font-family: 'Playfair Display', serif; }
+
+        .wellness-card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.04);
+            border: 1px solid rgba(249, 168, 201, 0.15);
+        }
+
+        .btn-gradient {
+            background: linear-gradient(135deg, var(--rose) 0%, var(--peach) 100%);
+            color: white;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-gradient:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(249, 168, 201, 0.3);
+        }
+
+        .day-card.today {
+            border: 2px solid var(--rose);
+            background: linear-gradient(145deg, #ffffff, #fffafc);
+            transform: scale(1.02);
+            z-index: 10;
+            box-shadow: 0 15px 35px rgba(249, 168, 201, 0.15);
+        }
+
+        .reward-locked { filter: grayscale(1) opacity(0.4); transition: all 0.5s ease; }
+        .reward-unlocked { 
+            transform: scale(1.05); 
+            border: 2px solid var(--rose); 
+            box-shadow: 0 10px 25px rgba(249, 168, 201, 0.2);
+            transition: all 0.5s ease;
+        }
+
+        .exercise-tag {
+            background: var(--cream);
+            border: 1px solid var(--lavender);
+            font-size: 0.7rem;
+            padding: 6px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            display: inline-block;
+            margin: 3px;
+            transition: all 0.2s;
+            font-weight: bold;
+            color: var(--text);
+        }
+        .exercise-tag:hover { background: var(--lavender); color: white; transform: translateY(-2px); }
+
+        .info-pill {
+            font-size: 0.65rem;
+            background: #fdf2f8;
+            color: #be185d;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .progress-bar-fill { transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
+        .fade-in { animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Stopky dizajn */
+        .timer-display {
+            font-variant-numeric: tabular-nums;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-10 pb-32">
+
+    <div class="max-w-xl mx-auto space-y-8">
+        
+        <!-- Setup Screen -->
+        <div id="setup-screen" class="hidden wellness-card p-10 text-center space-y-8 fade-in">
+            <div class="text-6xl animate-bounce" style="animation-duration: 3s;">🌸</div>
+            <div>
+                <h1 class="text-3xl text-gray-800 mb-2">Tvoj nový začiatok</h1>
+                <p class="text-gray-500 italic">"Vybuduj si telo, v ktorom sa budeš cítiť doma."</p>
+            </div>
+            
+            <div class="bg-rose-50 p-5 rounded-2xl border border-rose-100 text-sm text-rose-600 leading-relaxed text-left">
+                <strong>💡 Ako to funguje?</strong> Za každý splnený tréning získaš <strong>fiktívne eurá</strong>. Šetri si ich a dopraj si vytúženú odmenu v reálnom živote bez výčitiek!
+            </div>
+
+            <div class="space-y-6">
+                <div class="text-left space-y-2">
+                    <label class="text-[10px] font-bold uppercase text-gray-400 tracking-widest pl-2">Štartovacia váha (kg)</label>
+                    <input type="number" id="start-weight" class="w-full p-4 text-center text-3xl font-bold border-2 border-pink-50 rounded-2xl focus:outline-none focus:border-rose-300 transition-colors" placeholder="00.0">
+                    <p id="weight-error" class="text-xs text-rose-500 font-bold mt-2 hidden text-center"></p>
+                </div>
+            </div>
+
+            <button id="start-journey-btn" class="w-full btn-gradient py-5 rounded-2xl font-bold text-lg shadow-lg tracking-wide uppercase">Vstúpiť do denníka</button>
+        </div>
+
+        <!-- Main Dashboard -->
+        <div id="main-dashboard" class="hidden space-y-8 fade-in">
+            <header class="text-center space-y-3 pt-4">
+                <p class="text-xs font-bold text-rose-400 uppercase tracking-widest">Tvoja cesta za zdravím</p>
+                <h1 class="text-4xl text-gray-800">Dnes ži pre seba</h1>
+                <p id="daily-quote" class="text-sm italic text-gray-500 px-4">"Výsledky neprídu za noc, ale za každodennú snahu."</p>
+            </header>
+
+            <!-- Statistiky -->
+            <div class="grid grid-cols-2 gap-4">
+                <div class="wellness-card p-6 text-center border-b-4 border-rose-300 relative overflow-hidden">
+                    <div class="absolute -right-4 -top-4 text-5xl opacity-5">⚖️</div>
+                    <p class="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-2">Moja Váha</p>
+                    <p class="text-3xl font-bold text-gray-800"><span id="current-weight">0</span> <span class="text-base text-gray-500 font-medium">kg</span></p>
+                </div>
+                <div class="wellness-card p-6 text-center border-b-4 border-lavender relative overflow-hidden">
+                    <div class="absolute -right-4 -top-4 text-5xl opacity-5">💰</div>
+                    <p class="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-2">Fiktívne Úspory</p>
+                    <p class="text-3xl font-bold text-gray-800"><span id="balance">0</span> <span class="text-base text-gray-500 font-medium">€</span></p>
+                </div>
+            </div>
+
+            <!-- Ukazovateľ pokroku k odmene -->
+            <div id="progress-section" class="wellness-card p-6 bg-gradient-to-br from-white to-rose-50 border-none shadow-sm">
+                <div class="flex justify-between items-end mb-3">
+                    <div>
+                        <p class="text-[10px] uppercase tracking-widest text-rose-400 font-bold">Ďalší míľnik</p>
+                        <h3 id="next-reward-title" class="text-lg font-bold text-gray-800 mt-1">Načítavam...</h3>
+                    </div>
+                    <p id="next-reward-price" class="text-sm font-bold text-gray-500">0 €</p>
+                </div>
+                <div class="w-full bg-white rounded-full h-4 border border-rose-100 overflow-hidden">
+                    <div id="progress-bar" class="bg-gradient-to-r from-rose-300 to-peach-400 h-full progress-bar-fill rounded-full" style="width: 0%"></div>
+                </div>
+                <p id="progress-text" class="text-xs text-center text-gray-500 mt-3 font-medium">Cvič a odomkni si ďalšiu odmenu!</p>
+            </div>
+
+            <!-- Weekly Plan with Choices -->
+            <div class="space-y-4">
+                <h2 class="text-xl text-gray-800 px-2 flex justify-between items-center">
+                    Tvoj týždenný plán 
+                    <span class="text-[10px] text-rose-500 font-bold uppercase tracking-widest bg-rose-100 px-3 py-1 rounded-full shadow-sm">Dnes</span>
+                </h2>
+                <div id="weekly-plan-container" class="space-y-4">
+                    <!-- Dni vloží JS -->
+                </div>
+            </div>
+
+            <!-- Rewards Gallery -->
+            <div class="space-y-5">
+                <h2 class="text-xl text-gray-800 px-2 text-center">Galéria mojich snov</h2>
+                <div id="rewards-gallery" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    <!-- Odmeny vloží JS -->
+                </div>
+            </div>
+
+            <footer class="text-center py-8 space-y-5">
+                <button id="reset-btn" class="text-[10px] text-rose-300 hover:text-rose-500 uppercase font-bold tracking-widest transition-colors">Začať úplne odznova</button>
+                <div class="pt-4 border-t border-rose-50">
+                    <button onclick="document.getElementById('cookie-banner').style.display='block'" class="text-[10px] text-gray-400 hover:text-gray-600 underline transition-colors">Nastavenie súkromia a cookies</button>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Daily Guide Modal -->
+    <div id="guide-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-6 opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-[32px] p-8 w-full max-w-sm relative shadow-2xl overflow-y-auto max-h-[90vh]" id="guide-modal-content">
+            <button id="close-guide-btn" class="absolute top-6 right-6 text-gray-300 hover:text-gray-600 bg-gray-50 p-2 rounded-full">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            
+            <h3 id="guide-title" class="text-2xl text-gray-800 mb-2 font-serif pr-8">Focus dňa</h3>
+            <div id="guide-content" class="space-y-6 mt-6">
+                <!-- Dynamický obsah -->
+            </div>
+            <button id="close-guide-footer-btn" class="w-full mt-8 bg-gradient-to-r from-rose-100 to-peach-100 text-rose-600 py-4 rounded-2xl font-bold shadow-sm hover:opacity-90 transition-opacity">Idem cvičiť!</button>
+        </div>
+    </div>
+
+    <!-- Exercise Detail & Timer Modal -->
+    <div id="exercise-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[60] p-6 opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-[32px] p-6 w-full max-w-sm relative shadow-2xl" id="exercise-modal-content">
+            <button id="close-modal-btn" class="absolute top-4 right-4 text-gray-600 bg-white/80 backdrop-blur rounded-full p-2 z-10 shadow-sm border border-gray-100">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            
+            <h3 id="modal-title" class="text-xl text-gray-800 mb-3 font-serif font-bold pr-8"></h3>
+            
+            <div class="rounded-2xl overflow-hidden mb-4 h-48 bg-gray-100 relative border border-gray-200">
+                <img id="modal-image" src="" alt="Cvik" class="w-full h-full object-cover">
+            </div>
+            
+            <p id="modal-description" class="text-gray-600 text-sm leading-relaxed mb-4"></p>
+            
+            <!-- Zabudované stopky -->
+            <div class="bg-rose-50 p-4 rounded-2xl text-center border border-rose-100 mt-4">
+                <p class="text-[10px] font-bold text-rose-500 uppercase tracking-widest mb-1">Odpočet cvičenia</p>
+                <div id="timer-display" class="timer-display text-5xl font-bold text-gray-800 mb-3 tracking-wider">00:45</div>
+                
+                <div class="flex justify-center gap-2">
+                    <button id="timer-start" class="flex-1 bg-rose-400 text-white py-3 rounded-xl text-sm font-bold shadow-md hover:bg-rose-500 transition-colors">Štart</button>
+                    <button id="timer-reset" class="px-4 bg-white text-gray-600 py-3 rounded-xl text-sm font-bold shadow-sm border border-gray-200 hover:bg-gray-50">Reset</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cookie Banner pre EÚ GDPR a Analytics -->
+    <div id="cookie-banner" class="fixed bottom-4 left-4 right-4 md:left-auto md:w-[400px] bg-gray-900 text-white p-6 rounded-3xl z-[100] shadow-2xl hidden fade-in border border-gray-700">
+        <div class="flex flex-col gap-4">
+            <div>
+                <h4 class="text-sm font-bold mb-2">Ochrana tvojho súkromia</h4>
+                <p class="text-xs text-gray-300 leading-relaxed">
+                    Pre bezproblémové fungovanie appky a ukladanie tvojho pokroku využívame lokálnu pamäť tvojho zariadenia (tieto dáta nikam neposielame).
+                    <br><br>
+                    Zároveň by sme ťa chceli poprosiť o súhlas s použitím analytických cookies (Google Analytics), ktoré nám pomáhajú zistiť, koľko ľudí appku používa a ako ju môžeme vylepšiť.
+                </p>
+            </div>
+            <div class="flex gap-3 mt-2">
+                <button id="reject-cookies" class="flex-1 bg-transparent border border-gray-600 text-gray-300 py-3 rounded-xl text-xs font-bold hover:bg-gray-800 transition-colors">Len nevyhnutné</button>
+                <button id="accept-cookies" class="flex-1 bg-white text-gray-900 py-3 rounded-xl text-xs font-bold hover:bg-gray-100 transition-colors shadow-lg">Súhlasím</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const STORAGE_KEY = 'wellness_gold_v2';
+            const CONSENT_KEY = 'wellness_consent_analytics_eu';
+            
+            // --- STOPKY LOGIKA ---
+            let timerInterval;
+            let timeLeft = 45;
+            let isRunning = false;
+            
+            const timerDisplay = document.getElementById('timer-display');
+            const btnStart = document.getElementById('timer-start');
+            const btnReset = document.getElementById('timer-reset');
+
+            function updateTimerDisplay() {
+                const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+                const s = (timeLeft % 60).toString().padStart(2, '0');
+                timerDisplay.textContent = `${m}:${s}`;
+            }
+
+            function startTimer() {
+                if (isRunning) {
+                    clearInterval(timerInterval);
+                    btnStart.textContent = "Pokračovať";
+                    btnStart.classList.replace('bg-orange-400', 'bg-rose-400');
+                    isRunning = false;
+                } else {
+                    isRunning = true;
+                    btnStart.textContent = "Pauza";
+                    btnStart.classList.replace('bg-rose-400', 'bg-orange-400');
+                    timerInterval = setInterval(() => {
+                        if (timeLeft > 0) {
+                            timeLeft--;
+                            updateTimerDisplay();
+                        } else {
+                            clearInterval(timerInterval);
+                            isRunning = false;
+                            btnStart.textContent = "Hotovo! 🎉";
+                            btnStart.classList.replace('bg-orange-400', 'bg-green-500');
+                            confetti({ particleCount: 50, spread: 40, origin: { y: 0.8 } });
+                        }
+                    }, 1000);
+                }
+            }
+
+            function resetTimer() {
+                clearInterval(timerInterval);
+                isRunning = false;
+                timeLeft = 45; // Reset na 45 sekúnd
+                btnStart.textContent = "Štart";
+                btnStart.classList.remove('bg-orange-400', 'bg-green-500');
+                btnStart.classList.add('bg-rose-400');
+                updateTimerDisplay();
+            }
+
+            btnStart.addEventListener('click', startTimer);
+            btnReset.addEventListener('click', resetTimer);
+            // ---------------------
+
+            const quotes = [
+                "Neklam sama seba. Rob to pre ten úžasný pocit po tréningu.",
+                "Strava je 80% úspechu. Tréning je oslava toho, čo tvoje telo dokáže.",
+                "Konzistencia je oveľa dôležitejšia ako dokonalosť.",
+                "Nezabúdaj na pitný režim. Čistá voda je ten najlepší spaľovač."
+            ];
+
+            // Vylepšené a jednoduché cviky
+            const exercises = {
+                drepy: { 
+                    title: "20x Drepy", 
+                    desc: "Základ na zadok a stehná. Postav sa na šírku ramien, špičky mierne von. Choď dole akoby si si sadala na stoličku. Váha na pätách, chrbát rovný. Urob poctivých 20 opakovaní.", 
+                    img: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=600" 
+                },
+                kliky: { 
+                    title: "15x Dámske kliky", 
+                    desc: "Spevnenie hrudníka a rúk. Opri sa o kolená a dlane. Ruky širšie ako ramená. S nádychom pomaly krč lakte, s výdychom sa odtlač hore. Urob 15 opakovaní.", 
+                    img: "https://images.unsplash.com/photo-1598266663975-d2a67734a727?w=600" 
+                },
+                jumping_jacks: { 
+                    title: "30x Jumping Jacks", 
+                    desc: "Pajciaci na zahriatie! Z noženia snožmo a s rukami pri tele vyskoč do roznoženia a ruky spoj nad hlavou. Svižné tempo, 30 opakovaní bez pauzy.", 
+                    img: "https://images.unsplash.com/photo-1603233489397-6c8a245d1d91?w=600" 
+                },
+                plank: { 
+                    title: "45 sek. Plank (Doska)", 
+                    desc: "Cvik na pevné brucho. Opri sa o predlaktia. Telo musí byť v jednej rovine, zadok netrčí hore. Zhlboka dýchaj. Spusti si stopky a vydrž 45 sekúnd!", 
+                    img: "https://images.unsplash.com/photo-1566241440091-ec10de8f611a?w=600" 
+                },
+                vypady: { 
+                    title: "10x Výpady (každá noha)", 
+                    desc: "Krásne nohy. Urob dlhý krok vpred. Zadné koleno smeruje tesne nad zem, predné koleno nejde cez špičku. 10x na pravú, 10x na ľavú nohu.", 
+                    img: "https://images.unsplash.com/photo-1434608519344-49d77a699e1d?w=600" 
+                },
+                brusaky: { 
+                    title: "20x Skracovačky na brucho", 
+                    desc: "Ľahni si na chrbát, pokrč kolená. Ruky jemne za hlavou. S výdychom odlep lopatky od zeme, brada smeruje do stropu. Neťahaj hlavu rukami! 20 opakovaní.", 
+                    img: "https://images.unsplash.com/photo-1577221084712-45b044c67f13?w=600" 
+                }
+            };
+
+            const rewardsCatalog = [
+                { title: "Pleťová maska", price: 10, img: "https://images.unsplash.com/photo-1596755389378-c31d21fd1273?w=300" },
+                { title: "Kvalitný čaj", price: 30, img: "https://images.unsplash.com/photo-1576091160550-2173bdd99602?w=300" },
+                { title: "Nová kniha", price: 50, img: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=300" },
+                { title: "Krásne legíny", price: 80, img: "https://images.unsplash.com/photo-1506629082923-e9d68d44a139?w=300" },
+                { title: "Nové tenisky", price: 150, img: "https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=300" },
+                { title: "Wellness víkend", price: 400, img: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=300" }
+            ];
+
+            const plans = [
+                { 
+                    day: "Pondelok", 
+                    light: { focus: "Rýchly štart", reward: 10, ex: ["drepy", "plank"], time: "10 min", diet: "Daj si dnes pohár teplej vody s citrónom hneď po prebudení." }, 
+                    deep: { focus: "Full Body Pondelok", reward: 25, ex: ["jumping_jacks", "drepy", "kliky", "plank"], time: "25 min", diet: "Bielkovinové raňajky (vajcia/tvaroh) ti dodajú silu na celý deň." } 
+                },
+                { 
+                    day: "Utorok", 
+                    light: { focus: "Pevné bruško", reward: 10, ex: ["plank", "brusaky"], time: "10 min", diet: "Dnes vynechaj sladkosti. Namiesto toho si daj hrsť orechov." }, 
+                    deep: { focus: "Silný stred tela", reward: 25, ex: ["jumping_jacks", "plank", "brusaky", "drepy"], time: "25 min", diet: "Na obed zvoľ chudé mäso s kopcom čerstvej zeleniny." } 
+                },
+                { 
+                    day: "Streda", 
+                    light: { focus: "Pohyb pre radosť", reward: 10, ex: ["jumping_jacks", "vypady"], time: "10 min", diet: "Nezabudni piť! Vypi dnes aspoň 2 litre čistej vody." }, 
+                    deep: { focus: "Kardio & Nohy", reward: 25, ex: ["jumping_jacks", "drepy", "vypady"], time: "25 min", diet: "Po cvičení potrebuješ doplniť energiu – daj si banán alebo proteín." } 
+                },
+                { 
+                    day: "Štvrtok", 
+                    light: { focus: "Pevný postoj", reward: 10, ex: ["plank", "kliky"], time: "10 min", diet: "Obmedz dnes pečivo. Nahraď ho ryžou, quinoou alebo batátmi." }, 
+                    deep: { focus: "Spodná a vrchná časť", reward: 25, ex: ["drepy", "kliky", "vypady", "brusaky"], time: "30 min", diet: "Telo si pýta rybu! Losos alebo tuniak ti dodajú zdravé tuky." } 
+                },
+                { 
+                    day: "Piatok", 
+                    light: { focus: "Predvíkendový reset", reward: 10, ex: ["drepy", "plank"], time: "10 min", diet: "Ľahká večera – vývar alebo zeleninový šalát zaručia lepší spánok." }, 
+                    deep: { focus: "HIIT Piatok", reward: 25, ex: ["jumping_jacks", "drepy", "kliky", "vypady", "brusaky"], time: "35 min", diet: "Po tomto ťažkom tréningu si smelo dopraj svoje obľúbené jedlo." } 
+                },
+                { 
+                    day: "Sobota", 
+                    light: { focus: "Len tak pre seba", reward: 10, ex: ["brusaky", "plank"], time: "10 min", diet: "Cez víkend sa jedlo nepočíta, ale jedz pomaly a vychutnávaj si ho." }, 
+                    deep: { focus: "Sobotňajšia drina", reward: 30, ex: ["jumping_jacks", "drepy", "vypady", "plank"], time: "30 min", diet: "Ak ťa chytí chuť na sladké, skús horkú čokoládu s vysokým podielom kakaa." } 
+                },
+                { 
+                    day: "Nedeľa", 
+                    focus: "Zaslúžený oddych", 
+                    ex: [], 
+                    time: "Celý deň", 
+                    diet: "Priprav si jedlo do krabičiek na pondelok. Ušetríš čas aj kalórie." 
+                }
+            ];
+
+            const load = () => JSON.parse(localStorage.getItem(STORAGE_KEY));
+            const save = (data) => localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+
+            const render = () => {
+                const data = load();
+                if (!data) {
+                    document.getElementById('setup-screen').classList.remove('hidden');
+                    document.getElementById('main-dashboard').classList.add('hidden');
+                } else {
+                    document.getElementById('setup-screen').classList.add('hidden');
+                    document.getElementById('main-dashboard').classList.remove('hidden');
+                    
+                    document.getElementById('balance').textContent = data.balance;
+                    document.getElementById('current-weight').textContent = data.currentWeight;
+                    document.getElementById('daily-quote').textContent = `"${quotes[Math.floor(Math.random() * quotes.length)]}"`;
+                    
+                    renderProgressBar(data.balance);
+                    renderPlan(data);
+                    renderRewards(data);
+                }
+
+                // EÚ GDPR Kontrola na začiatku
+                const userConsent = localStorage.getItem(CONSENT_KEY);
+                if (!userConsent) {
+                    document.getElementById('cookie-banner').style.display = 'block';
+                } else if (userConsent === 'granted') {
+                    // Ak už raz súhlasila, pošleme Googlu informáciu, že môže spustiť analytiku
+                    if (typeof gtag === 'function') {
+                        gtag('consent', 'update', { 'analytics_storage': 'granted' });
+                    }
+                }
+            };
+
+            const renderProgressBar = (balance) => {
+                const nextReward = rewardsCatalog.find(r => r.price > balance);
+                const progressText = document.getElementById('progress-text');
+                const progressBar = document.getElementById('progress-bar');
+                
+                if (nextReward) {
+                    document.getElementById('next-reward-title').textContent = nextReward.title;
+                    document.getElementById('next-reward-price').textContent = `${nextReward.price} €`;
+                    
+                    const percent = Math.floor((balance / nextReward.price) * 100);
+                    progressBar.style.width = `${percent}%`;
+                    
+                    const remaining = nextReward.price - balance;
+                    progressText.innerHTML = `Chýba ti <strong>${remaining}€</strong>. Zvládneš to!`;
+                } else {
+                    document.getElementById('next-reward-title').textContent = "Všetko odomknuté!";
+                    document.getElementById('next-reward-price').textContent = "🏆";
+                    progressBar.style.width = `100%`;
+                    progressText.textContent = "Nasporené máš na všetko! Si neskutočná motivácia.";
+                }
+            };
+
+            const renderPlan = (data) => {
+                const container = document.getElementById('weekly-plan-container');
+                container.innerHTML = '';
+                const todayIdx = (new Date().getDay() + 6) % 7;
+                const todayId = new Date().toISOString().split('T')[0];
+
+                plans.forEach((p, idx) => {
+                    const isToday = idx === todayIdx;
+                    const isDone = data.completedDays.includes(todayId) && isToday;
+                    
+                    const card = document.createElement('div');
+                    card.className = `wellness-card p-5 transition-all duration-500 ${isToday ? 'today' : 'opacity-40 grayscale pointer-events-none'}`;
+                    
+                    let content = `<div class="flex justify-between items-start mb-3">
+                        <p class="text-[10px] font-bold uppercase text-gray-400 tracking-widest">${p.day}</p>
+                        ${isToday && !isDone ? '<span class="info-pill animate-pulse">Dnešný Cieľ</span>' : ''}
+                    </div>`;
+                    
+                    if (isToday && !isDone) {
+                        if (p.light) {
+                            content += `
+                                <div class="grid grid-cols-2 gap-3 mb-4">
+                                    <button onclick="showGuide('${p.day}', 'light')" class="p-3 border-2 border-pink-100 rounded-2xl text-left bg-gradient-to-br from-white to-pink-50 hover:border-pink-300 transition-all group">
+                                        <p class="text-[9px] font-bold text-pink-500 uppercase tracking-tighter mb-1 flex justify-between">LIGHT <span>${p.light.time}</span></p>
+                                        <p class="text-xs font-bold text-gray-800 leading-tight">${p.light.focus}</p>
+                                        <p class="text-[9px] text-gray-500 mt-2 bg-white inline-block px-2 py-1 rounded shadow-sm">Ukáž tréning</p>
+                                    </button>
+                                    <button onclick="showGuide('${p.day}', 'deep')" class="p-3 border-2 border-orange-100 rounded-2xl text-left bg-gradient-to-br from-white to-orange-50 hover:border-orange-300 transition-all group">
+                                        <p class="text-[9px] font-bold text-orange-500 uppercase tracking-tighter mb-1 flex justify-between">DEEP <span>${p.deep.time}</span></p>
+                                        <p class="text-xs font-bold text-gray-800 leading-tight">${p.deep.focus}</p>
+                                        <p class="text-[9px] text-gray-500 mt-2 bg-white inline-block px-2 py-1 rounded shadow-sm">Ukáž tréning</p>
+                                    </button>
+                                </div>
+                                <div class="flex flex-col sm:flex-row gap-2">
+                                     <button onclick="completeDay(${p.light.reward})" class="flex-1 bg-white border border-pink-200 text-pink-600 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-pink-50 transition shadow-sm">Splniť Light (+${p.light.reward}€)</button>
+                                     <button onclick="completeDay(${p.deep.reward})" class="flex-1 btn-gradient py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-md">Splniť Deep (+${p.deep.reward}€)</button>
+                                </div>
+                            `;
+                        } else {
+                            content += `<p class="text-base font-bold text-gray-800 mb-2">${p.focus}</p>`;
+                            content += `
+                                <div class="bg-blue-50 p-4 rounded-2xl mb-4 border border-blue-100">
+                                    <p class="text-[10px] uppercase font-bold text-blue-500 mb-1 tracking-widest">Tip na voľný deň:</p>
+                                    <p class="text-sm text-gray-700 leading-relaxed">${p.diet}</p>
+                                </div>
+                            `;
+                            content += `<button onclick="completeDay(10)" class="w-full bg-blue-100 text-blue-600 py-4 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-blue-200 transition">Užiť si oddych (+10€)</button>`;
+                        }
+                    } else if (isToday && isDone) {
+                        content += `<div class="text-center py-6 bg-green-50 rounded-2xl border border-green-100 mt-2">
+                            <div class="text-4xl mb-2">🌿</div>
+                            <p class="text-green-700 font-bold text-lg">Dnešný tréning splnený!</p>
+                            <p class="text-sm text-green-600 mt-1">Si skvelá. Zajtra pokračujeme.</p>
+                        </div>`;
+                    } else {
+                        content += `<p class="text-sm font-bold text-gray-700">${p.focus || (p.light.focus + ' / ' + p.deep.focus)}</p>`;
+                    }
+                    
+                    card.innerHTML = content;
+                    container.appendChild(card);
+                });
+            };
+
+            const renderRewards = (data) => {
+                const container = document.getElementById('rewards-gallery');
+                container.innerHTML = '';
+                rewardsCatalog.forEach(reward => {
+                    const isUnlocked = data.balance >= reward.price;
+                    const card = document.createElement('div');
+                    card.className = `wellness-card p-3 flex flex-col items-center transition-all duration-500 ${isUnlocked ? 'reward-unlocked' : 'reward-locked'}`;
+                    
+                    const statusIcon = isUnlocked 
+                        ? `<div class="absolute top-2 right-2 bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs shadow-md">✓</div>` 
+                        : `<div class="absolute top-2 right-2 bg-gray-800 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs shadow-md opacity-80">🔒</div>`;
+
+                    card.innerHTML = `
+                        <div class="w-full aspect-square rounded-2xl overflow-hidden mb-3 bg-gray-100 relative">
+                            <img src="${reward.img}" class="w-full h-full object-cover">
+                            ${statusIcon}
+                        </div>
+                        <p class="text-xs font-bold text-gray-800 text-center leading-tight mb-1">${reward.title}</p>
+                        <p class="text-[11px] ${isUnlocked ? 'text-pink-500 font-bold' : 'text-gray-400'}">${reward.price}€</p>
+                    `;
+                    container.appendChild(card);
+                });
+            };
+
+            // Modal Controls
+            const openModal = (id) => {
+                const modal = document.getElementById(id);
+                const content = document.getElementById(`${id}-content`);
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    if(content) content.classList.remove('scale-95');
+                }, 10);
+            };
+
+            const closeModal = (id) => {
+                const modal = document.getElementById(id);
+                const content = document.getElementById(`${id}-content`);
+                modal.classList.add('opacity-0');
+                if(content) content.classList.add('scale-95');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+            };
+
+            window.showEx = (id) => {
+                const ex = exercises[id];
+                document.getElementById('modal-title').textContent = ex.title;
+                document.getElementById('modal-description').textContent = ex.desc;
+                document.getElementById('modal-image').src = ex.img;
+                
+                // Resetujeme stopky pri každom otvorení cviku
+                resetTimer();
+
+                openModal('exercise-modal');
+            };
+
+            window.showGuide = (dayName, type) => {
+                const day = plans.find(p => p.day === dayName);
+                const info = day[type];
+                const content = document.getElementById('guide-content');
+                const themeColor = type === 'light' ? 'rose' : 'orange';
+                
+                document.getElementById('guide-title').textContent = `${info.focus}`;
+                
+                content.innerHTML = `
+                    <div class="space-y-5">
+                        <div class="bg-${themeColor}-50 p-5 rounded-3xl border border-${themeColor}-100">
+                            <div class="flex items-center gap-3 mb-2">
+                                <span class="text-2xl">⏱️</span>
+                                <div>
+                                    <h4 class="text-[10px] font-bold text-${themeColor}-500 uppercase tracking-widest">Trvanie</h4>
+                                    <p class="text-base text-gray-800 font-bold">${info.time}</p>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-700 mt-2">Daj si telefón bokom. Cviky rob za sebou, opakuj ich dookola kým neuplynie čas.</p>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-5 rounded-3xl border border-gray-200">
+                            <div class="flex items-center gap-3 mb-2">
+                                <span class="text-2xl">🥗</span>
+                                <h4 class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Výživa pre tento tréning</h4>
+                            </div>
+                            <p class="text-sm text-gray-800 leading-relaxed font-medium">${info.diet}</p>
+                        </div>
+                        
+                        <div>
+                            <h4 class="text-[10px] font-bold text-gray-400 uppercase mb-3 tracking-widest pl-2">📝 Tvoje cviky (Klikni pre stopky)</h4>
+                            <div class="flex flex-col gap-2">
+                                ${info.ex.map(e => `
+                                    <div class="flex items-center justify-between p-4 border-2 border-gray-100 rounded-2xl bg-white cursor-pointer hover:border-lavender hover:shadow-md transition-all group" onclick="showEx('${e}')">
+                                        <span class="font-bold text-sm text-gray-800">${exercises[e].title}</span>
+                                        <span class="text-xl group-hover:scale-125 transition-transform">⏱️</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                openModal('guide-modal');
+            };
+
+            window.completeDay = (reward) => {
+                const data = load();
+                const todayId = new Date().toISOString().split('T')[0];
+                if (!data.completedDays.includes(todayId)) {
+                    data.balance += reward;
+                    data.completedDays.push(todayId);
+                    save(data);
+                    
+                    closeModal('guide-modal');
+                    
+                    const duration = 3000;
+                    const end = Date.now() + duration;
+                    (function frame() {
+                        confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#f9a8c9', '#fbc4a0', '#d4b8e0', '#eab308'] });
+                        confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#f9a8c9', '#fbc4a0', '#d4b8e0', '#eab308'] });
+                        if (Date.now() < end) requestAnimationFrame(frame);
+                    }());
+                    
+                    setTimeout(render, 500);
+                }
+            };
+
+            document.getElementById('start-journey-btn').addEventListener('click', () => {
+                const w = parseFloat(document.getElementById('start-weight').value);
+                const errorEl = document.getElementById('weight-error');
+                
+                if (isNaN(w) || w <= 0) {
+                    errorEl.textContent = 'Zadaj platnú váhu.';
+                    errorEl.classList.remove('hidden');
+                } else {
+                    errorEl.classList.add('hidden');
+                    save({ startWeight: w, currentWeight: w, balance: 0, completedDays: [] });
+                    // Poslať event do Google Analytics, že niekto začal
+                    if (typeof gtag === 'function') gtag('event', 'started_journey');
+                    render();
+                }
+            });
+
+            // Logika pre udelenie súhlasu
+            document.getElementById('accept-cookies').addEventListener('click', () => {
+                localStorage.setItem(CONSENT_KEY, 'granted');
+                const banner = document.getElementById('cookie-banner');
+                banner.style.opacity = '0';
+                
+                // Povolenie Google Analytics po súhlase
+                if (typeof gtag === 'function') {
+                    gtag('consent', 'update', { 'analytics_storage': 'granted' });
+                }
+                
+                setTimeout(() => banner.style.display = 'none', 300);
+            });
+
+            // Logika pre zamietnutie analytiky (EÚ pravidlo)
+            document.getElementById('reject-cookies').addEventListener('click', () => {
+                localStorage.setItem(CONSENT_KEY, 'denied');
+                const banner = document.getElementById('cookie-banner');
+                banner.style.opacity = '0';
+                
+                // Google Analytics zostane na 'denied' (nič sa nesleduje)
+                setTimeout(() => banner.style.display = 'none', 300);
+            });
+
+            document.getElementById('close-guide-btn').addEventListener('click', () => closeModal('guide-modal'));
+            document.getElementById('close-guide-footer-btn').addEventListener('click', () => closeModal('guide-modal'));
+            document.getElementById('close-modal-btn').addEventListener('click', () => {
+                closeModal('exercise-modal');
+                // Vypnúť stopky ak sa okno zavrie
+                clearInterval(timerInterval);
+                isRunning = false;
+            });
+
+            document.getElementById('reset-btn').addEventListener('click', () => {
+                if(confirm('Upozornenie: Toto vymaže celú tvoju históriu a fiktívne úspory. Začať odznova?')) {
+                    localStorage.removeItem(STORAGE_KEY);
+                    location.reload();
+                }
+            });
+
+            render();
+        });
+    </script>
+</body>
+</html>
