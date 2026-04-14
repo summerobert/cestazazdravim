@@ -5,12 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Môj Wellness Denník</title>
     
-    <!-- GOOGLE CONSENT MODE V2 (Prísne EÚ GDPR) -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
-      
-      // Predvolene ZAKÁŽEME analytiku, kým používateľ neklikne na Súhlasím
       gtag('consent', 'default', {
         'analytics_storage': 'denied',
         'ad_storage': 'denied',
@@ -19,13 +16,12 @@
       });
     </script>
     
-    <!-- GOOGLE ANALYTICS (Nahraď G-TVOJE_ID_TU tvojím reálnym číslom) -->
+    <!-- Tu nezabudni vlozit svoje G- ID -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-TVOJE_ID_TU"></script>
     <script>
       gtag('js', new Date());
       gtag('config', 'G-TVOJE_ID_TU');
     </script>
-    <!-- KONIEC GOOGLE ANALYTICS -->
 
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -37,7 +33,6 @@
             --lavender: #d4b8e0;
             --cream:    #fff8f3;
             --text:     #4a4a4a;
-            --gold:     #eab308;
         }
 
         body {
@@ -78,47 +73,18 @@
         }
 
         .reward-locked { filter: grayscale(1) opacity(0.4); transition: all 0.5s ease; }
-        .reward-unlocked { 
-            transform: scale(1.05); 
-            border: 2px solid var(--rose); 
-            box-shadow: 0 10px 25px rgba(249, 168, 201, 0.2);
-            transition: all 0.5s ease;
-        }
-
-        .exercise-tag {
-            background: var(--cream);
-            border: 1px solid var(--lavender);
-            font-size: 0.7rem;
-            padding: 6px 14px;
-            border-radius: 20px;
-            cursor: pointer;
-            display: inline-block;
-            margin: 3px;
-            transition: all 0.2s;
-            font-weight: bold;
-            color: var(--text);
-        }
-        .exercise-tag:hover { background: var(--lavender); color: white; transform: translateY(-2px); }
-
-        .info-pill {
-            font-size: 0.65rem;
-            background: #fdf2f8;
-            color: #be185d;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
+        .reward-unlocked { transform: scale(1.05); border: 2px solid var(--rose); box-shadow: 0 10px 25px rgba(249, 168, 201, 0.2); transition: all 0.5s ease; }
 
         .progress-bar-fill { transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
         .fade-in { animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .timer-display { font-variant-numeric: tabular-nums; }
 
-        /* Stopky dizajn */
-        .timer-display {
-            font-variant-numeric: tabular-nums;
-        }
+        /* Custom scrollbar pre historiu vahy */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #f9a8c9; border-radius: 10px; }
     </style>
 </head>
 <body class="min-h-screen p-4 md:p-10 pb-32">
@@ -152,21 +118,50 @@
         <div id="main-dashboard" class="hidden space-y-8 fade-in">
             <header class="text-center space-y-3 pt-4">
                 <p class="text-xs font-bold text-rose-400 uppercase tracking-widest">Tvoja cesta za zdravím</p>
-                <h1 class="text-4xl text-gray-800">Dnes ži pre seba</h1>
-                <p id="daily-quote" class="text-sm italic text-gray-500 px-4">"Výsledky neprídu za noc, ale za každodennú snahu."</p>
+                <h1 class="text-4xl text-gray-800" id="current-day-name">Dnes ži pre seba</h1>
+                <p id="daily-quote" class="text-sm italic text-gray-500 px-4 leading-relaxed"></p>
             </header>
 
-            <!-- Statistiky -->
+            <!-- Vylepšené Štatistiky -->
             <div class="grid grid-cols-2 gap-4">
-                <div class="wellness-card p-6 text-center border-b-4 border-rose-300 relative overflow-hidden">
-                    <div class="absolute -right-4 -top-4 text-5xl opacity-5">⚖️</div>
-                    <p class="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-2">Moja Váha</p>
+                <div class="wellness-card p-5 text-center border-b-4 border-rose-300 relative overflow-hidden flex flex-col justify-center items-center">
+                    <p class="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-1">Moja Váha</p>
                     <p class="text-3xl font-bold text-gray-800"><span id="current-weight">0</span> <span class="text-base text-gray-500 font-medium">kg</span></p>
+                    <div class="flex gap-2 mt-3 w-full">
+                        <button id="open-weight-modal-btn" class="flex-1 bg-rose-50 text-rose-500 hover:bg-rose-100 px-2 py-2 rounded-xl text-[10px] font-bold transition-colors">
+                            ✏️ Zapísať
+                        </button>
+                        <button id="open-history-modal-btn" class="flex-1 bg-gray-50 text-gray-500 hover:bg-gray-100 px-2 py-2 rounded-xl text-[10px] font-bold transition-colors">
+                            📊 História
+                        </button>
+                    </div>
                 </div>
-                <div class="wellness-card p-6 text-center border-b-4 border-lavender relative overflow-hidden">
+                <div class="wellness-card p-5 text-center border-b-4 border-lavender relative overflow-hidden flex flex-col justify-center items-center">
                     <div class="absolute -right-4 -top-4 text-5xl opacity-5">💰</div>
-                    <p class="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-2">Fiktívne Úspory</p>
+                    <p class="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-1">Fiktívne Úspory</p>
                     <p class="text-3xl font-bold text-gray-800"><span id="balance">0</span> <span class="text-base text-gray-500 font-medium">€</span></p>
+                    <p class="text-[9px] text-gray-400 mt-2 bg-gray-50 w-full py-2 rounded-xl font-medium">Zarobené drinou</p>
+                </div>
+            </div>
+
+            <!-- NOVINKA: Vizuálny Fotodenník (Nahrádza ťahák na porcie) -->
+            <div class="wellness-card p-6 bg-gradient-to-br from-orange-50 to-white border-orange-100">
+                <div class="flex justify-between items-center mb-3">
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl">📸</span>
+                        <h3 class="text-base font-bold text-gray-800">Môj tanier (Fotodenník)</h3>
+                    </div>
+                    <!-- Tlačidlo pre otvorenie kamery -->
+                    <label class="bg-white border border-orange-200 text-orange-500 hover:bg-orange-100 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer transition-colors shadow-sm flex items-center gap-1">
+                        + Odfotiť
+                        <input type="file" id="food-camera-input" accept="image/*" capture="environment" class="hidden">
+                    </label>
+                </div>
+                <p class="text-xs text-gray-600 mb-4 leading-relaxed">Nepočítaj kalórie. Odfot si každé jedlo pred tým, než ho zješ. Tvoja vizuálna kontrola funguje lepšie ako akákoľvek tabuľka.</p>
+                
+                <!-- Galéria jedla -->
+                <div id="food-gallery" class="grid grid-cols-3 gap-2">
+                    <!-- Tu sa objavia fotky jedla -->
                 </div>
             </div>
 
@@ -174,7 +169,7 @@
             <div id="progress-section" class="wellness-card p-6 bg-gradient-to-br from-white to-rose-50 border-none shadow-sm">
                 <div class="flex justify-between items-end mb-3">
                     <div>
-                        <p class="text-[10px] uppercase tracking-widest text-rose-400 font-bold">Ďalší míľnik</p>
+                        <p class="text-[10px] uppercase tracking-widest text-rose-400 font-bold">Ďalšia odmena</p>
                         <h3 id="next-reward-title" class="text-lg font-bold text-gray-800 mt-1">Načítavam...</h3>
                     </div>
                     <p id="next-reward-price" class="text-sm font-bold text-gray-500">0 €</p>
@@ -185,23 +180,19 @@
                 <p id="progress-text" class="text-xs text-center text-gray-500 mt-3 font-medium">Cvič a odomkni si ďalšiu odmenu!</p>
             </div>
 
-            <!-- Weekly Plan with Choices -->
             <div class="space-y-4">
                 <h2 class="text-xl text-gray-800 px-2 flex justify-between items-center">
-                    Tvoj týždenný plán 
+                    Týždenný plán 
                     <span class="text-[10px] text-rose-500 font-bold uppercase tracking-widest bg-rose-100 px-3 py-1 rounded-full shadow-sm">Dnes</span>
                 </h2>
                 <div id="weekly-plan-container" class="space-y-4">
-                    <!-- Dni vloží JS -->
-                </div>
+                    </div>
             </div>
 
-            <!-- Rewards Gallery -->
             <div class="space-y-5">
                 <h2 class="text-xl text-gray-800 px-2 text-center">Galéria mojich snov</h2>
                 <div id="rewards-gallery" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                    <!-- Odmeny vloží JS -->
-                </div>
+                    </div>
             </div>
 
             <footer class="text-center py-8 space-y-5">
@@ -213,25 +204,50 @@
         </div>
     </div>
 
+    <!-- MÓDAL NA ZÁPIS VÁHY -->
+    <div id="weight-input-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-6 opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-[32px] p-8 w-full max-w-xs relative shadow-2xl transform scale-95 transition-transform duration-300" id="weight-input-modal-content">
+            <button id="close-weight-input-btn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 bg-gray-50 p-2 rounded-full">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <h3 class="text-xl text-gray-800 mb-4 font-serif text-center">Nová váha</h3>
+            <input type="number" id="new-weight-input" class="w-full p-4 text-center text-4xl font-bold border-2 border-pink-50 rounded-2xl focus:outline-none focus:border-rose-300 mb-4" placeholder="00.0">
+            <button id="save-weight-btn" class="w-full btn-gradient py-4 rounded-xl font-bold text-sm shadow-md">Uložiť a sledovať progres</button>
+        </div>
+    </div>
+
+    <!-- MÓDAL NA HISTÓRIU VÁHY -->
+    <div id="weight-history-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-6 opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-[32px] p-8 w-full max-w-sm relative shadow-2xl transform scale-95 transition-transform duration-300" id="weight-history-modal-content">
+            <button id="close-weight-history-btn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 bg-gray-50 p-2 rounded-full">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <h3 class="text-xl text-gray-800 mb-6 font-serif flex items-center gap-2"><span class="text-2xl">📊</span> Tvoj progres</h3>
+            
+            <div id="weight-history-list" class="space-y-3 max-h-60 overflow-y-auto custom-scrollbar pr-2">
+                <!-- Zoznam historie sa vygeneruje tu -->
+            </div>
+            
+            <button id="close-history-footer-btn" class="w-full mt-6 bg-gray-100 text-gray-600 py-3 rounded-xl font-bold text-sm hover:bg-gray-200 transition-colors">Zavrieť</button>
+        </div>
+    </div>
+
     <!-- Daily Guide Modal -->
     <div id="guide-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-6 opacity-0 transition-opacity duration-300">
         <div class="bg-white rounded-[32px] p-8 w-full max-w-sm relative shadow-2xl overflow-y-auto max-h-[90vh]" id="guide-modal-content">
             <button id="close-guide-btn" class="absolute top-6 right-6 text-gray-300 hover:text-gray-600 bg-gray-50 p-2 rounded-full">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
-            
             <h3 id="guide-title" class="text-2xl text-gray-800 mb-2 font-serif pr-8">Focus dňa</h3>
-            <div id="guide-content" class="space-y-6 mt-6">
-                <!-- Dynamický obsah -->
-            </div>
+            <div id="guide-content" class="space-y-6 mt-6"></div>
             <button id="close-guide-footer-btn" class="w-full mt-8 bg-gradient-to-r from-rose-100 to-peach-100 text-rose-600 py-4 rounded-2xl font-bold shadow-sm hover:opacity-90 transition-opacity">Idem cvičiť!</button>
         </div>
     </div>
 
     <!-- Exercise Detail & Timer Modal -->
-    <div id="exercise-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[60] p-6 opacity-0 transition-opacity duration-300">
-        <div class="bg-white rounded-[32px] p-6 w-full max-w-sm relative shadow-2xl" id="exercise-modal-content">
-            <button id="close-modal-btn" class="absolute top-4 right-4 text-gray-600 bg-white/80 backdrop-blur rounded-full p-2 z-10 shadow-sm border border-gray-100">
+    <div id="exercise-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[60] p-4 md:p-6 opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-[32px] p-6 w-full max-w-sm relative shadow-2xl overflow-y-auto max-h-[95vh]" id="exercise-modal-content">
+            <button id="close-modal-btn" class="absolute top-4 right-4 text-gray-600 bg-white/90 backdrop-blur rounded-full p-2 z-10 shadow-sm border border-gray-200 hover:bg-gray-100">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
             
@@ -241,11 +257,10 @@
                 <img id="modal-image" src="" alt="Cvik" class="w-full h-full object-cover">
             </div>
             
-            <p id="modal-description" class="text-gray-600 text-sm leading-relaxed mb-4"></p>
+            <div id="modal-description" class="text-gray-700 text-sm leading-relaxed mb-4 bg-gray-50 p-4 rounded-2xl border border-gray-100"></div>
             
-            <!-- Zabudované stopky -->
-            <div class="bg-rose-50 p-4 rounded-2xl text-center border border-rose-100 mt-4">
-                <p class="text-[10px] font-bold text-rose-500 uppercase tracking-widest mb-1">Odpočet cvičenia</p>
+            <div class="bg-rose-50 p-4 rounded-2xl text-center border border-rose-100 mt-4 shadow-sm">
+                <p class="text-[10px] font-bold text-rose-500 uppercase tracking-widest mb-1">Odpočet na cvičenie</p>
                 <div id="timer-display" class="timer-display text-5xl font-bold text-gray-800 mb-3 tracking-wider">00:45</div>
                 
                 <div class="flex justify-center gap-2">
@@ -262,21 +277,23 @@
             <div>
                 <h4 class="text-sm font-bold mb-2">Ochrana tvojho súkromia</h4>
                 <p class="text-xs text-gray-300 leading-relaxed">
-                    Pre bezproblémové fungovanie appky a ukladanie tvojho pokroku využívame lokálnu pamäť tvojho zariadenia (tieto dáta nikam neposielame).
-                    <br><br>
-                    Zároveň by sme ťa chceli poprosiť o súhlas s použitím analytických cookies (Google Analytics), ktoré nám pomáhajú zistiť, koľko ľudí appku používa a ako ju môžeme vylepšiť.
+                    Pre fungovanie appky a ukladanie pokroku využívame len lokálnu pamäť tvojho zariadenia. Taktiež prosíme o súhlas s použitím analytických cookies (Google Analytics), aby sme zistili, či sa ti appka páči.
                 </p>
             </div>
             <div class="flex gap-3 mt-2">
-                <button id="reject-cookies" class="flex-1 bg-transparent border border-gray-600 text-gray-300 py-3 rounded-xl text-xs font-bold hover:bg-gray-800 transition-colors">Len nevyhnutné</button>
+                <button id="reject-cookies" class="flex-1 bg-transparent border border-gray-600 text-gray-300 py-3 rounded-xl text-xs font-bold hover:bg-gray-800 transition-colors">Zamietnuť</button>
                 <button id="accept-cookies" class="flex-1 bg-white text-gray-900 py-3 rounded-xl text-xs font-bold hover:bg-gray-100 transition-colors shadow-lg">Súhlasím</button>
             </div>
         </div>
     </div>
 
+    <!-- Skrytý Canvas pre kompresiu fotiek jedla -->
+    <canvas id="image-compressor" class="hidden"></canvas>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const STORAGE_KEY = 'wellness_gold_v2';
+            // Zmeneny kluc pre verziu 4
+            const STORAGE_KEY = 'wellness_gold_v4';
             const CONSENT_KEY = 'wellness_consent_analytics_eu';
             
             // --- STOPKY LOGIKA ---
@@ -289,6 +306,7 @@
             const btnReset = document.getElementById('timer-reset');
 
             function updateTimerDisplay() {
+                if (!timerDisplay) return;
                 const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
                 const s = (timeLeft % 60).toString().padStart(2, '0');
                 timerDisplay.textContent = `${m}:${s}`;
@@ -297,13 +315,17 @@
             function startTimer() {
                 if (isRunning) {
                     clearInterval(timerInterval);
-                    btnStart.textContent = "Pokračovať";
-                    btnStart.classList.replace('bg-orange-400', 'bg-rose-400');
+                    if (btnStart) {
+                        btnStart.textContent = "Pokračovať";
+                        btnStart.classList.replace('bg-orange-400', 'bg-rose-400');
+                    }
                     isRunning = false;
                 } else {
                     isRunning = true;
-                    btnStart.textContent = "Pauza";
-                    btnStart.classList.replace('bg-rose-400', 'bg-orange-400');
+                    if (btnStart) {
+                        btnStart.textContent = "Pauza";
+                        btnStart.classList.replace('bg-rose-400', 'bg-orange-400');
+                    }
                     timerInterval = setInterval(() => {
                         if (timeLeft > 0) {
                             timeLeft--;
@@ -311,8 +333,10 @@
                         } else {
                             clearInterval(timerInterval);
                             isRunning = false;
-                            btnStart.textContent = "Hotovo! 🎉";
-                            btnStart.classList.replace('bg-orange-400', 'bg-green-500');
+                            if (btnStart) {
+                                btnStart.textContent = "Hotovo! 🎉";
+                                btnStart.classList.replace('bg-orange-400', 'bg-green-500');
+                            }
                             confetti({ particleCount: 50, spread: 40, origin: { y: 0.8 } });
                         }
                     }, 1000);
@@ -322,106 +346,117 @@
             function resetTimer() {
                 clearInterval(timerInterval);
                 isRunning = false;
-                timeLeft = 45; // Reset na 45 sekúnd
-                btnStart.textContent = "Štart";
-                btnStart.classList.remove('bg-orange-400', 'bg-green-500');
-                btnStart.classList.add('bg-rose-400');
+                timeLeft = 45; 
+                if (btnStart) {
+                    btnStart.textContent = "Štart";
+                    btnStart.classList.remove('bg-orange-400', 'bg-green-500');
+                    btnStart.classList.add('bg-rose-400');
+                }
                 updateTimerDisplay();
             }
 
-            btnStart.addEventListener('click', startTimer);
-            btnReset.addEventListener('click', resetTimer);
-            // ---------------------
+            if (btnStart && btnReset) {
+                btnStart.addEventListener('click', startTimer);
+                btnReset.addEventListener('click', resetTimer);
+            }
 
-            const quotes = [
-                "Neklam sama seba. Rob to pre ten úžasný pocit po tréningu.",
-                "Strava je 80% úspechu. Tréning je oslava toho, čo tvoje telo dokáže.",
-                "Konzistencia je oveľa dôležitejšia ako dokonalosť.",
-                "Nezabúdaj na pitný režim. Čistá voda je ten najlepší spaľovač."
+            // --- MOTIVAČNÉ CITÁTY ---
+            const dailyQuotes = [
+                "Nedeľa: Ideálny čas na plánovanie. Priprav si ciele a zdravé jedlo na zajtra. Tvoje budúce ja ti poďakuje.",
+                "Pondelok: Nový týždeň, čistý štít! Nevynechaj dnešný tréning, nastaví ti víťazný tón na ďalších 6 dní.",
+                "Utorok: Motivácia ťa naštartuje, ale až zvyk ťa udrží v pohybe. Dnes budujeme zvyk.",
+                "Streda: Sme v polovici! Ak to išlo doteraz ťažko, zhlboka sa nadýchni. Ak ľahko, pridaj na tempe.",
+                "Štvrtok: Pamätaj, že úspech nie je o tom, byť dokonalá. Je to o tom, nevzdať sa, keď si unavená.",
+                "Piatok: Blíži sa víkend! Zamakaj dnes naplno, aby si si víkendový oddych a dobré jedlo zaslúžila.",
+                "Sobota: Telo potrebuje aj lásku. Vybehni na prechádzku, pretiahni sa a poďakuj telu za to, čo dokáže." 
             ];
 
-            // Vylepšené a jednoduché cviky
             const exercises = {
                 drepy: { 
-                    title: "20x Drepy", 
-                    desc: "Základ na zadok a stehná. Postav sa na šírku ramien, špičky mierne von. Choď dole akoby si si sadala na stoličku. Váha na pätách, chrbát rovný. Urob poctivých 20 opakovaní.", 
+                    title: "Drepy (Squats)", 
+                    desc: "<strong>Ako na to:</strong><br>1. Postav sa na šírku ramien, špičky idú jemne von.<br>2. Predstav si, že si sadáš na neviditeľnú stoličku dozadu.<br>3. Váhu drž na pätách (špičky sa nesmú odliepať).<br>4. Chrbát je celý čas rovný, nehrb sa.<br><em>Cieľ: 20 poctivých opakovaní.</em>", 
                     img: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=600" 
                 },
                 kliky: { 
-                    title: "15x Dámske kliky", 
-                    desc: "Spevnenie hrudníka a rúk. Opri sa o kolená a dlane. Ruky širšie ako ramená. S nádychom pomaly krč lakte, s výdychom sa odtlač hore. Urob 15 opakovaní.", 
+                    title: "Dámske kliky", 
+                    desc: "<strong>Ako na to:</strong><br>1. Kľakni si na podložku a opri sa o dlane (širšie ako ramená).<br>2. Prekríž si členky vo vzduchu.<br>3. Spevni brucho, aby ti zadok nepadal dole ani netrčal hore.<br>4. S nádychom pomaly krč lakte, s výdychom sa odtlač späť.<br><em>Cieľ: 15 opakovaní.</em>", 
                     img: "https://images.unsplash.com/photo-1598266663975-d2a67734a727?w=600" 
                 },
                 jumping_jacks: { 
-                    title: "30x Jumping Jacks", 
-                    desc: "Pajciaci na zahriatie! Z noženia snožmo a s rukami pri tele vyskoč do roznoženia a ruky spoj nad hlavou. Svižné tempo, 30 opakovaní bez pauzy.", 
+                    title: "Pajciaci (Jumping Jacks)", 
+                    desc: "<strong>Ako na to:</strong><br>1. Postav sa rovno s rukami pri tele.<br>2. V jednom plynulom výskoku rozkroč nohy od seba a zároveň tleskni rukami nad hlavou.<br>3. Okamžite vyskoč späť do počiatočnej pozície.<br><em>Tip: Výborné kardio na zahriatie! Daj si svižné tempo a urob 30 opakovaní.</em>", 
                     img: "https://images.unsplash.com/photo-1603233489397-6c8a245d1d91?w=600" 
                 },
                 plank: { 
-                    title: "45 sek. Plank (Doska)", 
-                    desc: "Cvik na pevné brucho. Opri sa o predlaktia. Telo musí byť v jednej rovine, zadok netrčí hore. Zhlboka dýchaj. Spusti si stopky a vydrž 45 sekúnd!", 
+                    title: "Doska (Plank)", 
+                    desc: "<strong>Ako na to:</strong><br>1. Ľahni si na brucho a dvihni sa na predlaktia a špičky nôh.<br>2. Tvoje telo musí tvoriť rovnú 'dosku' od hlavy až po päty.<br>3. Zhlboka dýchaj a pevne zatni brucho aj zadok.<br><em>Tip: Ak ťa bolia kríže, vystrč zadok trošilinku vyššie. Vydrž aspoň 45 sekúnd.</em>", 
                     img: "https://images.unsplash.com/photo-1566241440091-ec10de8f611a?w=600" 
                 },
                 vypady: { 
-                    title: "10x Výpady (každá noha)", 
-                    desc: "Krásne nohy. Urob dlhý krok vpred. Zadné koleno smeruje tesne nad zem, predné koleno nejde cez špičku. 10x na pravú, 10x na ľavú nohu.", 
+                    title: "Výpady vpred", 
+                    desc: "<strong>Ako na to:</strong><br>1. Postav sa rovno a urob jeden dlhý krok vpred.<br>2. Pokrč obe kolená, zadné koleno smeruje kúsok nad zem.<br>3. Predné koleno nesmie presiahnuť pred tvoju špičku na nohe.<br>4. Odtlač sa prednou nohou a vráť sa späť.<br><em>Cieľ: 10x na pravú, 10x na ľavú nohu.</em>", 
                     img: "https://images.unsplash.com/photo-1434608519344-49d77a699e1d?w=600" 
                 },
                 brusaky: { 
-                    title: "20x Skracovačky na brucho", 
-                    desc: "Ľahni si na chrbát, pokrč kolená. Ruky jemne za hlavou. S výdychom odlep lopatky od zeme, brada smeruje do stropu. Neťahaj hlavu rukami! 20 opakovaní.", 
+                    title: "Skracovačky na brucho", 
+                    desc: "<strong>Čo sú to skracovačky?</strong> Je to šetrnejšia a lepšia verzia klasických 'brušákov'.<br><br><strong>Ako na to:</strong><br>1. Ľahni si na chrbát, pokrč kolená a chodidlá opri o zem.<br>2. Ruky si daj jemne za uši (neťahaj si nimi krk!).<br>3. S výdychom odlep len lopatky a ramená od zeme, zadok a spodný chrbát zostávajú na zemi.<br>4. Brada smeruje hore do stropu, akoby si pod ňou mala jablko.<br><em>Cieľ: 20 sústredených opakovaní.</em>", 
                     img: "https://images.unsplash.com/photo-1577221084712-45b044c67f13?w=600" 
                 }
             };
 
             const rewardsCatalog = [
-                { title: "Pleťová maska", price: 10, img: "https://images.unsplash.com/photo-1596755389378-c31d21fd1273?w=300" },
-                { title: "Kvalitný čaj", price: 30, img: "https://images.unsplash.com/photo-1576091160550-2173bdd99602?w=300" },
-                { title: "Nová kniha", price: 50, img: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=300" },
-                { title: "Krásne legíny", price: 80, img: "https://images.unsplash.com/photo-1506629082923-e9d68d44a139?w=300" },
-                { title: "Nové tenisky", price: 150, img: "https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=300" },
-                { title: "Wellness víkend", price: 400, img: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=300" }
+                { title: "Kvalitná káva / Koláčik", price: 10, img: "https://images.unsplash.com/photo-1551024601-bec78aea704b?w=300" },
+                { title: "Pleťová maska", price: 25, img: "https://images.unsplash.com/photo-1596755389378-c31d21fd1273?w=300" },
+                { title: "Kniha / Časopis", price: 50, img: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=300" },
+                { title: "Krásne športové legíny", price: 100, img: "https://images.unsplash.com/photo-1518310383802-640c2de311b2?w=300" },
+                { title: "Nové tenisky", price: 200, img: "https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=300" },
+                { title: "Víkendový Wellness", price: 400, img: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=300" }
             ];
 
             const plans = [
-                { 
-                    day: "Pondelok", 
-                    light: { focus: "Rýchly štart", reward: 10, ex: ["drepy", "plank"], time: "10 min", diet: "Daj si dnes pohár teplej vody s citrónom hneď po prebudení." }, 
-                    deep: { focus: "Full Body Pondelok", reward: 25, ex: ["jumping_jacks", "drepy", "kliky", "plank"], time: "25 min", diet: "Bielkovinové raňajky (vajcia/tvaroh) ti dodajú silu na celý deň." } 
-                },
-                { 
-                    day: "Utorok", 
-                    light: { focus: "Pevné bruško", reward: 10, ex: ["plank", "brusaky"], time: "10 min", diet: "Dnes vynechaj sladkosti. Namiesto toho si daj hrsť orechov." }, 
-                    deep: { focus: "Silný stred tela", reward: 25, ex: ["jumping_jacks", "plank", "brusaky", "drepy"], time: "25 min", diet: "Na obed zvoľ chudé mäso s kopcom čerstvej zeleniny." } 
-                },
-                { 
-                    day: "Streda", 
-                    light: { focus: "Pohyb pre radosť", reward: 10, ex: ["jumping_jacks", "vypady"], time: "10 min", diet: "Nezabudni piť! Vypi dnes aspoň 2 litre čistej vody." }, 
-                    deep: { focus: "Kardio & Nohy", reward: 25, ex: ["jumping_jacks", "drepy", "vypady"], time: "25 min", diet: "Po cvičení potrebuješ doplniť energiu – daj si banán alebo proteín." } 
-                },
-                { 
-                    day: "Štvrtok", 
-                    light: { focus: "Pevný postoj", reward: 10, ex: ["plank", "kliky"], time: "10 min", diet: "Obmedz dnes pečivo. Nahraď ho ryžou, quinoou alebo batátmi." }, 
-                    deep: { focus: "Spodná a vrchná časť", reward: 25, ex: ["drepy", "kliky", "vypady", "brusaky"], time: "30 min", diet: "Telo si pýta rybu! Losos alebo tuniak ti dodajú zdravé tuky." } 
-                },
-                { 
-                    day: "Piatok", 
-                    light: { focus: "Predvíkendový reset", reward: 10, ex: ["drepy", "plank"], time: "10 min", diet: "Ľahká večera – vývar alebo zeleninový šalát zaručia lepší spánok." }, 
-                    deep: { focus: "HIIT Piatok", reward: 25, ex: ["jumping_jacks", "drepy", "kliky", "vypady", "brusaky"], time: "35 min", diet: "Po tomto ťažkom tréningu si smelo dopraj svoje obľúbené jedlo." } 
-                },
-                { 
-                    day: "Sobota", 
-                    light: { focus: "Len tak pre seba", reward: 10, ex: ["brusaky", "plank"], time: "10 min", diet: "Cez víkend sa jedlo nepočíta, ale jedz pomaly a vychutnávaj si ho." }, 
-                    deep: { focus: "Sobotňajšia drina", reward: 30, ex: ["jumping_jacks", "drepy", "vypady", "plank"], time: "30 min", diet: "Ak ťa chytí chuť na sladké, skús horkú čokoládu s vysokým podielom kakaa." } 
-                },
                 { 
                     day: "Nedeľa", 
                     focus: "Zaslúžený oddych", 
                     ex: [], 
                     time: "Celý deň", 
-                    diet: "Priprav si jedlo do krabičiek na pondelok. Ušetríš čas aj kalórie." 
+                    diet: "Priprav si jedlo do krabičiek na pondelok. Ušetríš čas aj kalórie z rýchleho občerstvenia." 
+                },
+                { 
+                    day: "Pondelok", 
+                    light: { focus: "Rýchly štart", reward: 10, ex: ["drepy", "plank"], time: "10 min", diet: "Daj si dnes pohár vlažnej vody s citrónom hneď po prebudení na štart trávenia." }, 
+                    deep: { focus: "Full Body Pondelok", reward: 25, ex: ["jumping_jacks", "drepy", "kliky", "plank"], time: "25 min", diet: "Bohaté bielkovinové raňajky (vajcia/tvaroh) ti dodajú silu a zastavia chute na sladké." } 
+                },
+                { 
+                    day: "Utorok", 
+                    light: { focus: "Pevné bruško", reward: 10, ex: ["plank", "brusaky"], time: "10 min", diet: "Dnes vyskúšaj úplne vynechať pridaný cukor. Ak máš chuť, siahni po jablku alebo orechoch." }, 
+                    deep: { focus: "Silný stred tela", reward: 25, ex: ["jumping_jacks", "plank", "brusaky", "drepy"], time: "25 min", diet: "Na obed zvoľ chudé mäso s kopcom čerstvej zeleniny podľa 'Pravidla dlane'." } 
+                },
+                { 
+                    day: "Streda", 
+                    light: { focus: "Pohyb pre radosť", reward: 10, ex: ["jumping_jacks", "vypady"], time: "10 min", diet: "Nezabudni piť! Vypi dnes aspoň 2 litre čistej vody, často si smäd mýlime s hladom." }, 
+                    deep: { focus: "Kardio & Nohy", reward: 25, ex: ["jumping_jacks", "drepy", "vypady"], time: "25 min", diet: "Po tomto cvičení potrebuješ doplniť energiu – daj si menší banán alebo kvalitný jogurt." } 
+                },
+                { 
+                    day: "Štvrtok", 
+                    light: { focus: "Pevný postoj", reward: 10, ex: ["plank", "kliky"], time: "10 min", diet: "Skús večer obmedziť ťažké pečivo. Nahraď ho ľahkou polievkou alebo šalátom." }, 
+                    deep: { focus: "Spodná a vrchná časť", reward: 25, ex: ["drepy", "kliky", "vypady", "brusaky"], time: "30 min", diet: "Telo si pýta zdravé tuky! Losos, avokádo alebo hrsť mandlí sú skvelá voľba." } 
+                },
+                { 
+                    day: "Piatok", 
+                    light: { focus: "Predvíkendový reset", reward: 10, ex: ["drepy", "plank"], time: "10 min", diet: "Zjedz večeru najneskôr 2 hodiny pred spánkom, zaručí ti to kvalitnejšiu regeneráciu." }, 
+                    deep: { focus: "HIIT Piatok", reward: 25, ex: ["jumping_jacks", "drepy", "kliky", "vypady", "brusaky"], time: "35 min", diet: "Po tomto mimoriadne ťažkom tréningu si s čistým svedomím dopraj svoje obľúbené jedlo." } 
+                },
+                { 
+                    day: "Sobota", 
+                    light: { focus: "Len tak pre seba", reward: 10, ex: ["brusaky", "plank"], time: "10 min", diet: "Cez víkend sa počítanie kalórií vypína, ale skús jesť pomaly a vychutnávať si každé sústo." }, 
+                    deep: { focus: "Sobotňajšia drina", reward: 30, ex: ["jumping_jacks", "drepy", "vypady", "plank"], time: "30 min", diet: "Ak ťa poobede chytí obrovská chuť na sladké, skús kvalitnú horkú čokoládu." } 
                 }
             ];
+
+            const getTodayDateString = () => {
+                const d = new Date();
+                return `${d.getDate()}.${d.getMonth()+1}.${d.getFullYear()}`;
+            };
 
             const load = () => JSON.parse(localStorage.getItem(STORAGE_KEY));
             const save = (data) => localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
@@ -432,29 +467,104 @@
                     document.getElementById('setup-screen').classList.remove('hidden');
                     document.getElementById('main-dashboard').classList.add('hidden');
                 } else {
+                    // Migrácia dát pre staršie verzie
+                    if (!data.weightHistory) {
+                        data.weightHistory = [{ date: getTodayDateString(), weight: data.currentWeight }];
+                        save(data);
+                    }
+                    if (!data.foodLog) {
+                        data.foodLog = [];
+                        save(data);
+                    }
+
                     document.getElementById('setup-screen').classList.add('hidden');
                     document.getElementById('main-dashboard').classList.remove('hidden');
                     
                     document.getElementById('balance').textContent = data.balance;
                     document.getElementById('current-weight').textContent = data.currentWeight;
-                    document.getElementById('daily-quote').textContent = `"${quotes[Math.floor(Math.random() * quotes.length)]}"`;
+                    
+                    const todayDayObj = new Date();
+                    const todayDayIndex = todayDayObj.getDay(); 
+                    document.getElementById('daily-quote').textContent = dailyQuotes[todayDayIndex];
                     
                     renderProgressBar(data.balance);
-                    renderPlan(data);
+                    renderPlan(data, todayDayIndex);
                     renderRewards(data);
+                    renderFoodLog(data);
                 }
 
-                // EÚ GDPR Kontrola na začiatku
                 const userConsent = localStorage.getItem(CONSENT_KEY);
                 if (!userConsent) {
                     document.getElementById('cookie-banner').style.display = 'block';
                 } else if (userConsent === 'granted') {
-                    // Ak už raz súhlasila, pošleme Googlu informáciu, že môže spustiť analytiku
-                    if (typeof gtag === 'function') {
-                        gtag('consent', 'update', { 'analytics_storage': 'granted' });
-                    }
+                    if (typeof gtag === 'function') gtag('consent', 'update', { 'analytics_storage': 'granted' });
                 }
             };
+
+            // Vykreslenie galérie jedla
+            const renderFoodLog = (data) => {
+                const gallery = document.getElementById('food-gallery');
+                gallery.innerHTML = '';
+                
+                if (!data.foodLog || data.foodLog.length === 0) {
+                    gallery.innerHTML = `<div class="col-span-3 text-center py-4 bg-white rounded-xl border border-gray-100 shadow-sm text-xs text-gray-400">Zatiaľ žiadna fotka. Pridaj svoj prvý tanier! 🍽️</div>`;
+                    return;
+                }
+
+                // Zobraziť max posledných 6 fotiek aby sme nepretazili pamat mobilu
+                const recentLogs = data.foodLog.slice(-6).reverse(); 
+
+                recentLogs.forEach(log => {
+                    const imgDiv = document.createElement('div');
+                    imgDiv.className = "w-full aspect-square rounded-xl overflow-hidden shadow-sm border border-gray-200 relative group";
+                    imgDiv.innerHTML = `
+                        <img src="${log.imgBase64}" class="w-full h-full object-cover">
+                        <div class="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-[8px] text-center py-1 font-bold">${log.time}</div>
+                    `;
+                    gallery.appendChild(imgDiv);
+                });
+            };
+
+            // Spracovanie odfotenej fotky z kamery
+            document.getElementById('food-camera-input').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = new Image();
+                    img.onload = function() {
+                        // Kompresia fotky cez Canvas, aby nezaplnila celu pamat telefonu
+                        const canvas = document.getElementById('image-compressor');
+                        const ctx = canvas.getContext('2d');
+                        
+                        const MAX_WIDTH = 400; // Zmensenina bohate staci
+                        const scaleSize = MAX_WIDTH / img.width;
+                        canvas.width = MAX_WIDTH;
+                        canvas.height = img.height * scaleSize;
+                        
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        
+                        // Kvalita jpeg na 0.6 urobi fotku malinkou
+                        const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
+                        
+                        const data = load();
+                        const now = new Date();
+                        const timeString = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+                        
+                        if(!data.foodLog) data.foodLog = [];
+                        data.foodLog.push({ time: timeString, imgBase64: dataUrl });
+                        
+                        // Nechame len poslednych 9 fotiek v pamati
+                        if (data.foodLog.length > 9) data.foodLog.shift();
+                        
+                        save(data);
+                        renderFoodLog(data);
+                    }
+                    img.src = event.target.result;
+                }
+                reader.readAsDataURL(file);
+            });
 
             const renderProgressBar = (balance) => {
                 const nextReward = rewardsCatalog.find(r => r.price > balance);
@@ -474,18 +584,20 @@
                     document.getElementById('next-reward-title').textContent = "Všetko odomknuté!";
                     document.getElementById('next-reward-price').textContent = "🏆";
                     progressBar.style.width = `100%`;
-                    progressText.textContent = "Nasporené máš na všetko! Si neskutočná motivácia.";
+                    progressText.textContent = "Nasporené máš na všetko! Si úžasná.";
                 }
             };
 
-            const renderPlan = (data) => {
+            const renderPlan = (data, todayIdx) => {
                 const container = document.getElementById('weekly-plan-container');
                 container.innerHTML = '';
-                const todayIdx = (new Date().getDay() + 6) % 7;
                 const todayId = new Date().toISOString().split('T')[0];
 
-                plans.forEach((p, idx) => {
-                    const isToday = idx === todayIdx;
+                const displayOrder = [1, 2, 3, 4, 5, 6, 0]; 
+
+                displayOrder.forEach(dayIndex => {
+                    const p = plans[dayIndex];
+                    const isToday = dayIndex === todayIdx;
                     const isDone = data.completedDays.includes(todayId) && isToday;
                     
                     const card = document.createElement('div');
@@ -493,27 +605,27 @@
                     
                     let content = `<div class="flex justify-between items-start mb-3">
                         <p class="text-[10px] font-bold uppercase text-gray-400 tracking-widest">${p.day}</p>
-                        ${isToday && !isDone ? '<span class="info-pill animate-pulse">Dnešný Cieľ</span>' : ''}
+                        ${isToday && !isDone ? '<span class="info-pill animate-pulse">Tvoja výzva na dnes</span>' : ''}
                     </div>`;
                     
                     if (isToday && !isDone) {
                         if (p.light) {
                             content += `
                                 <div class="grid grid-cols-2 gap-3 mb-4">
-                                    <button onclick="showGuide('${p.day}', 'light')" class="p-3 border-2 border-pink-100 rounded-2xl text-left bg-gradient-to-br from-white to-pink-50 hover:border-pink-300 transition-all group">
+                                    <button onclick="showGuide('${p.day}', 'light')" class="p-3 border-2 border-pink-100 rounded-2xl text-left bg-gradient-to-br from-white to-pink-50 hover:border-pink-300 transition-all group shadow-sm">
                                         <p class="text-[9px] font-bold text-pink-500 uppercase tracking-tighter mb-1 flex justify-between">LIGHT <span>${p.light.time}</span></p>
-                                        <p class="text-xs font-bold text-gray-800 leading-tight">${p.light.focus}</p>
-                                        <p class="text-[9px] text-gray-500 mt-2 bg-white inline-block px-2 py-1 rounded shadow-sm">Ukáž tréning</p>
+                                        <p class="text-xs font-bold text-gray-800 leading-tight mb-2">${p.light.focus}</p>
+                                        <p class="text-[9px] text-gray-500 bg-white inline-block px-2 py-1.5 rounded shadow-sm">Ukáž tréning ➔</p>
                                     </button>
-                                    <button onclick="showGuide('${p.day}', 'deep')" class="p-3 border-2 border-orange-100 rounded-2xl text-left bg-gradient-to-br from-white to-orange-50 hover:border-orange-300 transition-all group">
+                                    <button onclick="showGuide('${p.day}', 'deep')" class="p-3 border-2 border-orange-100 rounded-2xl text-left bg-gradient-to-br from-white to-orange-50 hover:border-orange-300 transition-all group shadow-sm">
                                         <p class="text-[9px] font-bold text-orange-500 uppercase tracking-tighter mb-1 flex justify-between">DEEP <span>${p.deep.time}</span></p>
-                                        <p class="text-xs font-bold text-gray-800 leading-tight">${p.deep.focus}</p>
-                                        <p class="text-[9px] text-gray-500 mt-2 bg-white inline-block px-2 py-1 rounded shadow-sm">Ukáž tréning</p>
+                                        <p class="text-xs font-bold text-gray-800 leading-tight mb-2">${p.deep.focus}</p>
+                                        <p class="text-[9px] text-gray-500 bg-white inline-block px-2 py-1.5 rounded shadow-sm">Ukáž tréning ➔</p>
                                     </button>
                                 </div>
                                 <div class="flex flex-col sm:flex-row gap-2">
-                                     <button onclick="completeDay(${p.light.reward})" class="flex-1 bg-white border border-pink-200 text-pink-600 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-pink-50 transition shadow-sm">Splniť Light (+${p.light.reward}€)</button>
-                                     <button onclick="completeDay(${p.deep.reward})" class="flex-1 btn-gradient py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-md">Splniť Deep (+${p.deep.reward}€)</button>
+                                     <button onclick="completeDay(${p.light.reward})" class="flex-1 bg-white border border-pink-200 text-pink-600 py-3.5 rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-pink-50 transition shadow-sm">Splniť Light (+${p.light.reward}€)</button>
+                                     <button onclick="completeDay(${p.deep.reward})" class="flex-1 btn-gradient py-3.5 rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-md">Splniť Deep (+${p.deep.reward}€)</button>
                                 </div>
                             `;
                         } else {
@@ -524,13 +636,13 @@
                                     <p class="text-sm text-gray-700 leading-relaxed">${p.diet}</p>
                                 </div>
                             `;
-                            content += `<button onclick="completeDay(10)" class="w-full bg-blue-100 text-blue-600 py-4 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-blue-200 transition">Užiť si oddych (+10€)</button>`;
+                            content += `<button onclick="completeDay(10)" class="w-full bg-blue-100 text-blue-600 py-4 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-blue-200 transition shadow-sm">Užiť si voľno (+10€)</button>`;
                         }
                     } else if (isToday && isDone) {
-                        content += `<div class="text-center py-6 bg-green-50 rounded-2xl border border-green-100 mt-2">
+                        content += `<div class="text-center py-6 bg-green-50 rounded-2xl border border-green-100 mt-2 shadow-inner">
                             <div class="text-4xl mb-2">🌿</div>
-                            <p class="text-green-700 font-bold text-lg">Dnešný tréning splnený!</p>
-                            <p class="text-sm text-green-600 mt-1">Si skvelá. Zajtra pokračujeme.</p>
+                            <p class="text-green-700 font-bold text-lg">Úloha splnená!</p>
+                            <p class="text-sm text-green-600 mt-1">Si úžasná. Pripísali sme ti eurá, bež relaxovať.</p>
                         </div>`;
                     } else {
                         content += `<p class="text-sm font-bold text-gray-700">${p.focus || (p.light.focus + ' / ' + p.deep.focus)}</p>`;
@@ -565,7 +677,6 @@
                 });
             };
 
-            // Modal Controls
             const openModal = (id) => {
                 const modal = document.getElementById(id);
                 const content = document.getElementById(`${id}-content`);
@@ -588,13 +699,11 @@
 
             window.showEx = (id) => {
                 const ex = exercises[id];
-                document.getElementById('modal-title').textContent = ex.title;
-                document.getElementById('modal-description').textContent = ex.desc;
+                document.getElementById('modal-title').innerHTML = ex.title;
+                document.getElementById('modal-description').innerHTML = ex.desc;
                 document.getElementById('modal-image').src = ex.img;
                 
-                // Resetujeme stopky pri každom otvorení cviku
                 resetTimer();
-
                 openModal('exercise-modal');
             };
 
@@ -608,32 +717,32 @@
                 
                 content.innerHTML = `
                     <div class="space-y-5">
-                        <div class="bg-${themeColor}-50 p-5 rounded-3xl border border-${themeColor}-100">
+                        <div class="bg-${themeColor}-50 p-5 rounded-3xl border border-${themeColor}-100 shadow-sm">
                             <div class="flex items-center gap-3 mb-2">
                                 <span class="text-2xl">⏱️</span>
                                 <div>
-                                    <h4 class="text-[10px] font-bold text-${themeColor}-500 uppercase tracking-widest">Trvanie</h4>
+                                    <h4 class="text-[10px] font-bold text-${themeColor}-500 uppercase tracking-widest">Tvoj cieľový čas</h4>
                                     <p class="text-base text-gray-800 font-bold">${info.time}</p>
                                 </div>
                             </div>
-                            <p class="text-sm text-gray-700 mt-2">Daj si telefón bokom. Cviky rob za sebou, opakuj ich dookola kým neuplynie čas.</p>
+                            <p class="text-sm text-gray-700 mt-2">Daj si telefón bokom. Cviky rob za sebou (jeden okruh). Keď urobíš všetky, daj si minútu pauzu a zopakuj okruh, kým neuplynie čas.</p>
                         </div>
                         
-                        <div class="bg-gray-50 p-5 rounded-3xl border border-gray-200">
+                        <div class="bg-gray-50 p-5 rounded-3xl border border-gray-200 shadow-sm">
                             <div class="flex items-center gap-3 mb-2">
                                 <span class="text-2xl">🥗</span>
-                                <h4 class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Výživa pre tento tréning</h4>
+                                <h4 class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Môj tip na túto chvíľu</h4>
                             </div>
                             <p class="text-sm text-gray-800 leading-relaxed font-medium">${info.diet}</p>
                         </div>
                         
                         <div>
-                            <h4 class="text-[10px] font-bold text-gray-400 uppercase mb-3 tracking-widest pl-2">📝 Tvoje cviky (Klikni pre stopky)</h4>
+                            <h4 class="text-[10px] font-bold text-gray-400 uppercase mb-3 tracking-widest pl-2">📝 Tvoje cviky (Klikni na ne pre stopky a návod)</h4>
                             <div class="flex flex-col gap-2">
                                 ${info.ex.map(e => `
-                                    <div class="flex items-center justify-between p-4 border-2 border-gray-100 rounded-2xl bg-white cursor-pointer hover:border-lavender hover:shadow-md transition-all group" onclick="showEx('${e}')">
-                                        <span class="font-bold text-sm text-gray-800">${exercises[e].title}</span>
-                                        <span class="text-xl group-hover:scale-125 transition-transform">⏱️</span>
+                                    <div class="flex items-center justify-between p-4 border-2 border-gray-100 rounded-2xl bg-white cursor-pointer hover:border-${themeColor}-200 hover:shadow-md transition-all group" onclick="showEx('${e}')">
+                                        <span class="font-bold text-sm text-gray-800 group-hover:text-${themeColor}-600 transition-colors">${exercises[e].title}</span>
+                                        <span class="text-xl group-hover:scale-125 transition-transform bg-${themeColor}-50 w-10 h-10 flex items-center justify-center rounded-full">⏱️</span>
                                     </div>
                                 `).join('')}
                             </div>
@@ -665,51 +774,104 @@
                 }
             };
 
+            // MODÁLY NA VÁHU A HISTÓRIU
+            document.getElementById('open-weight-modal-btn').addEventListener('click', () => {
+                const data = load();
+                document.getElementById('new-weight-input').value = data.currentWeight;
+                openModal('weight-input-modal');
+            });
+
+            document.getElementById('close-weight-input-btn').addEventListener('click', () => closeModal('weight-input-modal'));
+
+            document.getElementById('save-weight-btn').addEventListener('click', () => {
+                const wInput = document.getElementById('new-weight-input').value.replace(',', '.');
+                const newWeight = parseFloat(wInput);
+                
+                if(!isNaN(newWeight) && newWeight > 30 && newWeight < 200) {
+                    const data = load();
+                    data.currentWeight = newWeight;
+                    
+                    // Pridať do histórie
+                    if(!data.weightHistory) data.weightHistory = [];
+                    data.weightHistory.unshift({ date: getTodayDateString(), weight: newWeight }); // unshift pridá na začiatok
+                    
+                    save(data);
+                    render();
+                    closeModal('weight-input-modal');
+                } else {
+                    alert("Prosím, zadaj platné číslo.");
+                }
+            });
+
+            document.getElementById('open-history-modal-btn').addEventListener('click', () => {
+                const data = load();
+                const list = document.getElementById('weight-history-list');
+                list.innerHTML = '';
+                
+                if (data.weightHistory && data.weightHistory.length > 0) {
+                    data.weightHistory.forEach((item, index) => {
+                        // Vizuálne oddelenie prvej startovacej vahy od ostatnych
+                        const isStart = index === data.weightHistory.length - 1;
+                        list.innerHTML += `
+                            <div class="flex justify-between items-center p-4 bg-gray-50 rounded-2xl border ${isStart ? 'border-rose-200 bg-rose-50' : 'border-gray-100'}">
+                                <span class="text-sm text-gray-500 font-bold">${item.date} ${isStart ? '(Štart)' : ''}</span>
+                                <span class="text-lg font-bold text-gray-800">${item.weight} kg</span>
+                            </div>
+                        `;
+                    });
+                } else {
+                    list.innerHTML = `<p class="text-center text-gray-400 text-sm py-4">Zatiaľ žiadna história.</p>`;
+                }
+                openModal('weight-history-modal');
+            });
+
+            document.getElementById('close-weight-history-btn').addEventListener('click', () => closeModal('weight-history-modal'));
+            document.getElementById('close-history-footer-btn').addEventListener('click', () => closeModal('weight-history-modal'));
+
             document.getElementById('start-journey-btn').addEventListener('click', () => {
                 const w = parseFloat(document.getElementById('start-weight').value);
                 const errorEl = document.getElementById('weight-error');
                 
                 if (isNaN(w) || w <= 0) {
-                    errorEl.textContent = 'Zadaj platnú váhu.';
+                    errorEl.textContent = 'Zadaj platnú váhu v kg.';
                     errorEl.classList.remove('hidden');
                 } else {
                     errorEl.classList.add('hidden');
-                    save({ startWeight: w, currentWeight: w, balance: 0, completedDays: [] });
-                    // Poslať event do Google Analytics, že niekto začal
+                    save({ 
+                        startWeight: w, 
+                        currentWeight: w, 
+                        balance: 0, 
+                        completedDays: [],
+                        weightHistory: [{ date: getTodayDateString(), weight: w }],
+                        foodLog: []
+                    });
                     if (typeof gtag === 'function') gtag('event', 'started_journey');
                     render();
                 }
             });
 
-            // Logika pre udelenie súhlasu
             document.getElementById('accept-cookies').addEventListener('click', () => {
                 localStorage.setItem(CONSENT_KEY, 'granted');
                 const banner = document.getElementById('cookie-banner');
                 banner.style.opacity = '0';
-                
-                // Povolenie Google Analytics po súhlase
                 if (typeof gtag === 'function') {
                     gtag('consent', 'update', { 'analytics_storage': 'granted' });
                 }
-                
                 setTimeout(() => banner.style.display = 'none', 300);
             });
 
-            // Logika pre zamietnutie analytiky (EÚ pravidlo)
             document.getElementById('reject-cookies').addEventListener('click', () => {
                 localStorage.setItem(CONSENT_KEY, 'denied');
                 const banner = document.getElementById('cookie-banner');
                 banner.style.opacity = '0';
-                
-                // Google Analytics zostane na 'denied' (nič sa nesleduje)
                 setTimeout(() => banner.style.display = 'none', 300);
             });
 
             document.getElementById('close-guide-btn').addEventListener('click', () => closeModal('guide-modal'));
             document.getElementById('close-guide-footer-btn').addEventListener('click', () => closeModal('guide-modal'));
+            
             document.getElementById('close-modal-btn').addEventListener('click', () => {
                 closeModal('exercise-modal');
-                // Vypnúť stopky ak sa okno zavrie
                 clearInterval(timerInterval);
                 isRunning = false;
             });
