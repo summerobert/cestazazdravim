@@ -2,9 +2,24 @@
 <html lang="sk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Môj Wellness Denník</title>
     
+    <!-- NASTAVENIE PRE IKONKU NA PLOCHE MOBILU (Finta na iPhone cache ?v=2) -->
+    <!-- Pre Apple zariadenia (iPhone/iPad) -->
+    <link rel="apple-touch-icon" href="icon.png?v=2">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Denník">
+
+    <!-- Pre Android zariadenia -->
+    <link rel="icon" type="image/png" href="icon.png?v=2">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Denník">
+    <meta name="theme-color" content="#f9a8c9">
+    <!-- KONIEC NASTAVENIA IKONKY -->
+    
+    <!-- GOOGLE CONSENT MODE V2 -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
@@ -16,7 +31,7 @@
       });
     </script>
     
-    <!-- Tu nezabudni vlozit svoje G- ID -->
+    <!-- GOOGLE ANALYTICS -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-TVOJE_ID_TU"></script>
     <script>
       gtag('js', new Date());
@@ -81,7 +96,6 @@
         
         .timer-display { font-variant-numeric: tabular-nums; }
 
-        /* Custom scrollbar pre historiu vahy */
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #f9a8c9; border-radius: 10px; }
@@ -122,7 +136,6 @@
                 <p id="daily-quote" class="text-sm italic text-gray-500 px-4 leading-relaxed"></p>
             </header>
 
-            <!-- Vylepšené Štatistiky -->
             <div class="grid grid-cols-2 gap-4">
                 <div class="wellness-card p-5 text-center border-b-4 border-rose-300 relative overflow-hidden flex flex-col justify-center items-center">
                     <p class="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-1">Moja Váha</p>
@@ -144,14 +157,13 @@
                 </div>
             </div>
 
-            <!-- NOVINKA: Vizuálny Fotodenník (Nahrádza ťahák na porcie) -->
+            <!-- Vizuálny Fotodenník -->
             <div class="wellness-card p-6 bg-gradient-to-br from-orange-50 to-white border-orange-100">
                 <div class="flex justify-between items-center mb-3">
                     <div class="flex items-center gap-3">
                         <span class="text-2xl">📸</span>
                         <h3 class="text-base font-bold text-gray-800">Môj tanier (Fotodenník)</h3>
                     </div>
-                    <!-- Tlačidlo pre otvorenie kamery -->
                     <label class="bg-white border border-orange-200 text-orange-500 hover:bg-orange-100 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer transition-colors shadow-sm flex items-center gap-1">
                         + Odfotiť
                         <input type="file" id="food-camera-input" accept="image/*" capture="environment" class="hidden">
@@ -159,7 +171,6 @@
                 </div>
                 <p class="text-xs text-gray-600 mb-4 leading-relaxed">Nepočítaj kalórie. Odfot si každé jedlo pred tým, než ho zješ. Tvoja vizuálna kontrola funguje lepšie ako akákoľvek tabuľka.</p>
                 
-                <!-- Galéria jedla -->
                 <div id="food-gallery" class="grid grid-cols-3 gap-2">
                     <!-- Tu sa objavia fotky jedla -->
                 </div>
@@ -225,7 +236,6 @@
             <h3 class="text-xl text-gray-800 mb-6 font-serif flex items-center gap-2"><span class="text-2xl">📊</span> Tvoj progres</h3>
             
             <div id="weight-history-list" class="space-y-3 max-h-60 overflow-y-auto custom-scrollbar pr-2">
-                <!-- Zoznam historie sa vygeneruje tu -->
             </div>
             
             <button id="close-history-footer-btn" class="w-full mt-6 bg-gray-100 text-gray-600 py-3 rounded-xl font-bold text-sm hover:bg-gray-200 transition-colors">Zavrieť</button>
@@ -287,12 +297,10 @@
         </div>
     </div>
 
-    <!-- Skrytý Canvas pre kompresiu fotiek jedla -->
     <canvas id="image-compressor" class="hidden"></canvas>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Zmeneny kluc pre verziu 4
             const STORAGE_KEY = 'wellness_gold_v4';
             const CONSENT_KEY = 'wellness_consent_analytics_eu';
             
@@ -360,7 +368,6 @@
                 btnReset.addEventListener('click', resetTimer);
             }
 
-            // --- MOTIVAČNÉ CITÁTY ---
             const dailyQuotes = [
                 "Nedeľa: Ideálny čas na plánovanie. Priprav si ciele a zdravé jedlo na zajtra. Tvoje budúce ja ti poďakuje.",
                 "Pondelok: Nový týždeň, čistý štít! Nevynechaj dnešný tréning, nastaví ti víťazný tón na ďalších 6 dní.",
@@ -467,7 +474,6 @@
                     document.getElementById('setup-screen').classList.remove('hidden');
                     document.getElementById('main-dashboard').classList.add('hidden');
                 } else {
-                    // Migrácia dát pre staršie verzie
                     if (!data.weightHistory) {
                         data.weightHistory = [{ date: getTodayDateString(), weight: data.currentWeight }];
                         save(data);
@@ -501,7 +507,6 @@
                 }
             };
 
-            // Vykreslenie galérie jedla
             const renderFoodLog = (data) => {
                 const gallery = document.getElementById('food-gallery');
                 gallery.innerHTML = '';
@@ -511,7 +516,6 @@
                     return;
                 }
 
-                // Zobraziť max posledných 6 fotiek aby sme nepretazili pamat mobilu
                 const recentLogs = data.foodLog.slice(-6).reverse(); 
 
                 recentLogs.forEach(log => {
@@ -525,7 +529,6 @@
                 });
             };
 
-            // Spracovanie odfotenej fotky z kamery
             document.getElementById('food-camera-input').addEventListener('change', function(e) {
                 const file = e.target.files[0];
                 if (!file) return;
@@ -534,18 +537,16 @@
                 reader.onload = function(event) {
                     const img = new Image();
                     img.onload = function() {
-                        // Kompresia fotky cez Canvas, aby nezaplnila celu pamat telefonu
                         const canvas = document.getElementById('image-compressor');
                         const ctx = canvas.getContext('2d');
                         
-                        const MAX_WIDTH = 400; // Zmensenina bohate staci
+                        const MAX_WIDTH = 400; 
                         const scaleSize = MAX_WIDTH / img.width;
                         canvas.width = MAX_WIDTH;
                         canvas.height = img.height * scaleSize;
                         
                         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                         
-                        // Kvalita jpeg na 0.6 urobi fotku malinkou
                         const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
                         
                         const data = load();
@@ -555,7 +556,6 @@
                         if(!data.foodLog) data.foodLog = [];
                         data.foodLog.push({ time: timeString, imgBase64: dataUrl });
                         
-                        // Nechame len poslednych 9 fotiek v pamati
                         if (data.foodLog.length > 9) data.foodLog.shift();
                         
                         save(data);
@@ -774,7 +774,6 @@
                 }
             };
 
-            // MODÁLY NA VÁHU A HISTÓRIU
             document.getElementById('open-weight-modal-btn').addEventListener('click', () => {
                 const data = load();
                 document.getElementById('new-weight-input').value = data.currentWeight;
@@ -791,9 +790,8 @@
                     const data = load();
                     data.currentWeight = newWeight;
                     
-                    // Pridať do histórie
                     if(!data.weightHistory) data.weightHistory = [];
-                    data.weightHistory.unshift({ date: getTodayDateString(), weight: newWeight }); // unshift pridá na začiatok
+                    data.weightHistory.unshift({ date: getTodayDateString(), weight: newWeight }); 
                     
                     save(data);
                     render();
@@ -810,7 +808,6 @@
                 
                 if (data.weightHistory && data.weightHistory.length > 0) {
                     data.weightHistory.forEach((item, index) => {
-                        // Vizuálne oddelenie prvej startovacej vahy od ostatnych
                         const isStart = index === data.weightHistory.length - 1;
                         list.innerHTML += `
                             <div class="flex justify-between items-center p-4 bg-gray-50 rounded-2xl border ${isStart ? 'border-rose-200 bg-rose-50' : 'border-gray-100'}">
