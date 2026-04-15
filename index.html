@@ -95,6 +95,15 @@
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #f9a8c9; border-radius: 10px; }
+
+        /* --- GLOBÁLNE ZVÄČŠENIE PÍSMA --- */
+        html { font-size: 18px !important; } /* Zväčší všetky štandardné texty o cca 15% */
+        
+        /* Výrazné zväčšenie pre najmenšie pomocné texty, aby neťahali oči */
+        .text-\[8px\] { font-size: 11px !important; line-height: 1.4 !important; }
+        .text-\[9px\] { font-size: 12.5px !important; line-height: 1.4 !important; }
+        .text-\[10px\] { font-size: 14px !important; line-height: 1.4 !important; }
+        .text-\[11px\] { font-size: 15px !important; line-height: 1.4 !important; }
     </style>
 </head>
 <body class="min-h-screen p-4 md:p-10 pb-32">
