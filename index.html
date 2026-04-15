@@ -739,7 +739,11 @@
                 const ex = exercises[id];
                 document.getElementById('modal-title').innerHTML = ex.title;
                 document.getElementById('modal-description').innerHTML = ex.desc;
-                document.getElementById('modal-image').src = ex.img;
+                
+                const imgContainer = document.getElementById('modal-image-container');
+                const imgEl = document.getElementById('modal-image');
+                if(imgContainer) imgContainer.style.display = 'block';
+                imgEl.src = ex.img;
                 
                 resetTimer();
                 openModal('exercise-modal');
@@ -945,6 +949,7 @@
                 closeModal('exercise-modal');
                 clearInterval(timerInterval);
                 isRunning = false;
+                document.getElementById('modal-video').pause();
             });
 
             document.getElementById('reset-btn').addEventListener('click', () => {
