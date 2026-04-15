@@ -5,19 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Môj Wellness Denník</title>
     
-    <!-- NASTAVENIE PRE IKONKU NA PLOCHE MOBILU (Finta na iPhone cache ?v=2) -->
-    <!-- Pre Apple zariadenia (iPhone/iPad) -->
+    <!-- NASTAVENIE PRE IKONKU NA PLOCHE MOBILU -->
     <link rel="apple-touch-icon" href="icon.png?v=2">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Denník">
-
-    <!-- Pre Android zariadenia -->
     <link rel="icon" type="image/png" href="icon.png?v=2">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="application-name" content="Denník">
     <meta name="theme-color" content="#f9a8c9">
-    <!-- KONIEC NASTAVENIA IKONKY -->
     
     <!-- GOOGLE CONSENT MODE V2 -->
     <script>
@@ -162,16 +158,16 @@
                 <div class="flex justify-between items-center mb-3">
                     <div class="flex items-center gap-3">
                         <span class="text-2xl">📸</span>
-                        <h3 class="text-base font-bold text-gray-800">Môj tanier (Fotodenník)</h3>
+                        <h3 class="text-base font-bold text-gray-800">Môj tanier</h3>
                     </div>
                     <label class="bg-white border border-orange-200 text-orange-500 hover:bg-orange-100 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer transition-colors shadow-sm flex items-center gap-1">
                         + Odfotiť
                         <input type="file" id="food-camera-input" accept="image/*" capture="environment" class="hidden">
                     </label>
                 </div>
-                <p class="text-xs text-gray-600 mb-4 leading-relaxed">Nepočítaj kalórie. Odfot si každé jedlo pred tým, než ho zješ. Tvoja vizuálna kontrola funguje lepšie ako akákoľvek tabuľka.</p>
+                <p class="text-xs text-gray-600 mb-4 leading-relaxed">Nepočítaj kalórie. Odfot si každé jedlo pred tým, než ho zješ.</p>
                 
-                <div id="food-gallery" class="grid grid-cols-3 gap-2">
+                <div id="food-gallery">
                     <!-- Tu sa objavia fotky jedla -->
                 </div>
             </div>
@@ -197,21 +193,36 @@
                     <span class="text-[10px] text-rose-500 font-bold uppercase tracking-widest bg-rose-100 px-3 py-1 rounded-full shadow-sm">Dnes</span>
                 </h2>
                 <div id="weekly-plan-container" class="space-y-4">
-                    </div>
+                </div>
             </div>
 
             <div class="space-y-5">
                 <h2 class="text-xl text-gray-800 px-2 text-center">Galéria mojich snov</h2>
                 <div id="rewards-gallery" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                    </div>
+                </div>
             </div>
 
             <footer class="text-center py-8 space-y-5">
                 <button id="reset-btn" class="text-[10px] text-rose-300 hover:text-rose-500 uppercase font-bold tracking-widest transition-colors">Začať úplne odznova</button>
-                <div class="pt-4 border-t border-rose-50">
+                <div class="pt-4 border-t border-rose-50 flex flex-col gap-3 items-center">
+                    <button id="force-update-btn" class="text-[10px] bg-rose-50 text-rose-500 px-4 py-2 rounded-full font-bold hover:bg-rose-100 transition-colors shadow-sm">🔄 Skontrolovať aktualizácie</button>
                     <button onclick="document.getElementById('cookie-banner').style.display='block'" class="text-[10px] text-gray-400 hover:text-gray-600 underline transition-colors">Nastavenie súkromia a cookies</button>
                 </div>
             </footer>
+        </div>
+    </div>
+
+    <!-- MÓDAL NA KÚPU ODMENY -->
+    <div id="buy-reward-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-[70] p-6 opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-[32px] p-8 w-full max-w-xs relative shadow-2xl transform scale-95 transition-transform duration-300" id="buy-reward-modal-content">
+            <button id="close-buy-reward-btn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 bg-gray-50 p-2 rounded-full">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <div class="text-4xl text-center mb-4">🎁</div>
+            <h3 class="text-xl text-gray-800 mb-2 font-serif text-center">Tvoja odmena</h3>
+            <p class="text-sm text-gray-500 text-center mb-6">Naozaj si chceš dopriať <strong id="buy-reward-title" class="text-gray-800">...</strong> a minúť <strong id="buy-reward-price" class="text-pink-500">...</strong>?</p>
+            <button id="confirm-buy-btn" class="w-full btn-gradient py-4 rounded-xl font-bold text-sm shadow-md mb-2">Áno, zaslúžim si to!</button>
+            <button id="cancel-buy-btn" class="w-full bg-gray-100 text-gray-600 py-3 rounded-xl font-bold text-sm hover:bg-gray-200 transition-colors">Ešte si to pošetrím</button>
         </div>
     </div>
 
@@ -234,10 +245,7 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
             <h3 class="text-xl text-gray-800 mb-6 font-serif flex items-center gap-2"><span class="text-2xl">📊</span> Tvoj progres</h3>
-            
-            <div id="weight-history-list" class="space-y-3 max-h-60 overflow-y-auto custom-scrollbar pr-2">
-            </div>
-            
+            <div id="weight-history-list" class="space-y-3 max-h-60 overflow-y-auto custom-scrollbar pr-2"></div>
             <button id="close-history-footer-btn" class="w-full mt-6 bg-gray-100 text-gray-600 py-3 rounded-xl font-bold text-sm hover:bg-gray-200 transition-colors">Zavrieť</button>
         </div>
     </div>
@@ -260,19 +268,14 @@
             <button id="close-modal-btn" class="absolute top-4 right-4 text-gray-600 bg-white/90 backdrop-blur rounded-full p-2 z-10 shadow-sm border border-gray-200 hover:bg-gray-100">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
-            
             <h3 id="modal-title" class="text-xl text-gray-800 mb-3 font-serif font-bold pr-8"></h3>
-            
             <div class="rounded-2xl overflow-hidden mb-4 h-48 bg-gray-100 relative border border-gray-200">
                 <img id="modal-image" src="" alt="Cvik" class="w-full h-full object-cover">
             </div>
-            
             <div id="modal-description" class="text-gray-700 text-sm leading-relaxed mb-4 bg-gray-50 p-4 rounded-2xl border border-gray-100"></div>
-            
             <div class="bg-rose-50 p-4 rounded-2xl text-center border border-rose-100 mt-4 shadow-sm">
                 <p class="text-[10px] font-bold text-rose-500 uppercase tracking-widest mb-1">Odpočet na cvičenie</p>
                 <div id="timer-display" class="timer-display text-5xl font-bold text-gray-800 mb-3 tracking-wider">00:45</div>
-                
                 <div class="flex justify-center gap-2">
                     <button id="timer-start" class="flex-1 bg-rose-400 text-white py-3 rounded-xl text-sm font-bold shadow-md hover:bg-rose-500 transition-colors">Štart</button>
                     <button id="timer-reset" class="px-4 bg-white text-gray-600 py-3 rounded-xl text-sm font-bold shadow-sm border border-gray-200 hover:bg-gray-50">Reset</button>
@@ -512,20 +515,36 @@
                 gallery.innerHTML = '';
                 
                 if (!data.foodLog || data.foodLog.length === 0) {
+                    gallery.className = "grid grid-cols-3 gap-2";
                     gallery.innerHTML = `<div class="col-span-3 text-center py-4 bg-white rounded-xl border border-gray-100 shadow-sm text-xs text-gray-400">Zatiaľ žiadna fotka. Pridaj svoj prvý tanier! 🍽️</div>`;
                     return;
                 }
 
-                const recentLogs = data.foodLog.slice(-6).reverse(); 
+                gallery.className = "space-y-4 max-h-64 overflow-y-auto custom-scrollbar pr-2";
+                
+                const dates = [...new Set(data.foodLog.map(log => log.date || 'Staršie'))].reverse();
 
-                recentLogs.forEach(log => {
-                    const imgDiv = document.createElement('div');
-                    imgDiv.className = "w-full aspect-square rounded-xl overflow-hidden shadow-sm border border-gray-200 relative group";
-                    imgDiv.innerHTML = `
-                        <img src="${log.imgBase64}" class="w-full h-full object-cover">
-                        <div class="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-[8px] text-center py-1 font-bold">${log.time}</div>
-                    `;
-                    gallery.appendChild(imgDiv);
+                dates.forEach(date => {
+                    let groupHtml = `<div>
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">${date}</p>
+                        <div class="grid grid-cols-3 gap-2">`;
+                    
+                    const logs = data.foodLog.filter(log => (log.date || 'Staršie') === date).reverse();
+                    
+                    logs.forEach(log => {
+                        if (!log.id) log.id = Math.random().toString(36).substr(2, 9);
+                        
+                        groupHtml += `
+                            <div class="w-full aspect-square rounded-xl overflow-hidden shadow-sm border border-gray-200 relative group">
+                                <img src="${log.imgBase64}" class="w-full h-full object-cover">
+                                <div class="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-[8px] text-center py-1 font-bold">${log.time}</div>
+                                <button onclick="deleteFoodLog('${log.id}')" class="absolute top-1 right-1 bg-white/90 text-rose-500 rounded-full w-6 h-6 flex items-center justify-center text-xs shadow hover:bg-rose-50 transition-colors">✖</button>
+                            </div>
+                        `;
+                    });
+                    
+                    groupHtml += `</div></div>`;
+                    gallery.innerHTML += groupHtml;
                 });
             };
 
@@ -552,11 +571,13 @@
                         const data = load();
                         const now = new Date();
                         const timeString = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+                        const dateString = getTodayDateString();
+                        const uniqueId = Date.now().toString();
                         
                         if(!data.foodLog) data.foodLog = [];
-                        data.foodLog.push({ time: timeString, imgBase64: dataUrl });
+                        data.foodLog.push({ id: uniqueId, date: dateString, time: timeString, imgBase64: dataUrl });
                         
-                        if (data.foodLog.length > 9) data.foodLog.shift();
+                        if (data.foodLog.length > 30) data.foodLog.shift();
                         
                         save(data);
                         renderFoodLog(data);
@@ -656,19 +677,27 @@
             const renderRewards = (data) => {
                 const container = document.getElementById('rewards-gallery');
                 container.innerHTML = '';
-                rewardsCatalog.forEach(reward => {
+                rewardsCatalog.forEach((reward, index) => {
                     const isUnlocked = data.balance >= reward.price;
                     const card = document.createElement('div');
-                    card.className = `wellness-card p-3 flex flex-col items-center transition-all duration-500 ${isUnlocked ? 'reward-unlocked' : 'reward-locked'}`;
+                    card.className = `wellness-card p-3 flex flex-col items-center transition-all duration-500 ${isUnlocked ? 'reward-unlocked cursor-pointer' : 'reward-locked'}`;
                     
+                    if (isUnlocked) {
+                        card.onclick = () => openBuyRewardModal(index);
+                    }
+
                     const statusIcon = isUnlocked 
                         ? `<div class="absolute top-2 right-2 bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs shadow-md">✓</div>` 
                         : `<div class="absolute top-2 right-2 bg-gray-800 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs shadow-md opacity-80">🔒</div>`;
 
                     card.innerHTML = `
-                        <div class="w-full aspect-square rounded-2xl overflow-hidden mb-3 bg-gray-100 relative">
+                        <div class="w-full aspect-square rounded-2xl overflow-hidden mb-3 bg-gray-100 relative group">
                             <img src="${reward.img}" class="w-full h-full object-cover">
                             ${statusIcon}
+                            ${isUnlocked ? `
+                            <div class="absolute inset-0 bg-pink-500/0 group-hover:bg-pink-500/10 transition-colors flex flex-col items-center justify-center opacity-0 group-hover:opacity-100">
+                                <span class="bg-white text-pink-500 text-[10px] font-bold px-3 py-1.5 rounded-full shadow-lg border border-pink-100">Klikni a využi</span>
+                            </div>` : ''}
                         </div>
                         <p class="text-xs font-bold text-gray-800 text-center leading-tight mb-1">${reward.title}</p>
                         <p class="text-[11px] ${isUnlocked ? 'text-pink-500 font-bold' : 'text-gray-400'}">${reward.price}€</p>
@@ -774,6 +803,42 @@
                 }
             };
 
+            window.deleteFoodLog = (id) => {
+                if(confirm('Naozaj chceš vymazať túto fotku taniera?')) {
+                    const data = load();
+                    data.foodLog = data.foodLog.filter(log => log.id !== id);
+                    save(data);
+                    renderFoodLog(data);
+                }
+            };
+
+            window.openBuyRewardModal = (index) => {
+                const reward = rewardsCatalog[index];
+                const data = load();
+                if (data.balance >= reward.price) {
+                    document.getElementById('buy-reward-title').textContent = reward.title;
+                    document.getElementById('buy-reward-price').textContent = reward.price + ' €';
+                    
+                    const confirmBtn = document.getElementById('confirm-buy-btn');
+                    confirmBtn.onclick = () => {
+                        const currentData = load();
+                        if(currentData.balance >= reward.price) {
+                            currentData.balance -= reward.price;
+                            save(currentData);
+                            closeModal('buy-reward-modal');
+                            
+                            confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+                            setTimeout(render, 300);
+                        }
+                    };
+                    
+                    openModal('buy-reward-modal');
+                }
+            };
+
+            document.getElementById('close-buy-reward-btn').addEventListener('click', () => closeModal('buy-reward-modal'));
+            document.getElementById('cancel-buy-btn').addEventListener('click', () => closeModal('buy-reward-modal'));
+
             document.getElementById('open-weight-modal-btn').addEventListener('click', () => {
                 const data = load();
                 document.getElementById('new-weight-input').value = data.currentWeight;
@@ -878,6 +943,11 @@
                     localStorage.removeItem(STORAGE_KEY);
                     location.reload();
                 }
+            });
+
+            document.getElementById('force-update-btn').addEventListener('click', () => {
+                // Pridanie unikátneho parametra na koniec URL donúti mobil stiahnuť najnovšiu verziu
+                window.location.href = window.location.pathname + '?v=' + new Date().getTime();
             });
 
             render();
