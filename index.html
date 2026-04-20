@@ -2,970 +2,1448 @@
 <html lang="sk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#ef6f9b">
     <title>Môj Wellness Denník</title>
-    
-    <!-- NASTAVENIE PRE IKONKU NA PLOCHE MOBILU -->
-    <link rel="apple-touch-icon" href="icon.png?v=2">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Denník">
-    <link rel="icon" type="image/png" href="icon.png?v=2">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Denník">
-    <meta name="theme-color" content="#f9a8c9">
-    
-    <!-- GOOGLE CONSENT MODE V2 -->
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('consent', 'default', {
-        'analytics_storage': 'denied',
-        'ad_storage': 'denied',
-        'ad_user_data': 'denied',
-        'ad_personalization': 'denied'
-      });
-    </script>
-    
-    <!-- GOOGLE ANALYTICS -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-TVOJE_ID_TU"></script>
-    <script>
-      gtag('js', new Date());
-      gtag('config', 'G-TVOJE_ID_TU');
-    </script>
 
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('consent', 'default', {
+            analytics_storage: 'denied',
+            ad_storage: 'denied',
+            ad_user_data: 'denied',
+            ad_personalization: 'denied'
+        });
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
     <style>
         :root {
-            --rose:     #f9a8c9;
-            --peach:    #fbc4a0;
-            --lavender: #d4b8e0;
-            --cream:    #fff8f3;
-            --text:     #4a4a4a;
+            --rose: #ef6f9b;
+            --peach: #f8b78a;
+            --berry: #bf5f82;
+            --sand: #fff6ee;
+            --fog: #fffdfb;
+            --ink: #3f3440;
+            --gold: #eab308;
+            --mint: #d8f3dc;
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         body {
-            font-family: 'DM Sans', sans-serif;
-            background-color: var(--cream);
-            color: var(--text);
             margin: 0;
-            padding: 0;
+            font-family: 'DM Sans', sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(239, 111, 155, 0.08), transparent 30%),
+                linear-gradient(180deg, #fcf8f5 0%, #fbf8fb 100%);
+            color: var(--ink);
+            min-height: 100vh;
             -webkit-tap-highlight-color: transparent;
         }
 
-        h1, h2, h3 { font-family: 'Playfair Display', serif; }
-
-        .wellness-card {
-            background: white;
-            border-radius: 24px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.04);
-            border: 1px solid rgba(249, 168, 201, 0.15);
+        html {
+            scroll-behavior: smooth;
         }
 
-        .btn-gradient {
-            background: linear-gradient(135deg, var(--rose) 0%, var(--peach) 100%);
+        button,
+        input,
+        select,
+        textarea {
+            font: inherit;
+        }
+
+        button:focus-visible,
+        input:focus-visible,
+        a:focus-visible {
+            outline: 3px solid rgba(239, 111, 155, 0.55);
+            outline-offset: 3px;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.82);
+            border: 1px solid rgba(255, 255, 255, 0.55);
+            box-shadow: 0 20px 50px rgba(89, 51, 73, 0.08);
+            backdrop-filter: blur(16px);
+        }
+
+        .app-shell {
+            max-width: 430px;
+            margin: 0 auto;
+            background: linear-gradient(180deg, rgba(255,255,255,0.94), rgba(255,252,253,0.98));
+            border: 1px solid rgba(255,255,255,0.72);
+            box-shadow: 0 18px 40px rgba(89, 51, 73, 0.08);
+            border-radius: 38px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .phone-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.85rem 1.1rem 0.4rem;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #6b5565;
+        }
+
+        .phone-island {
+            width: 7.5rem;
+            height: 1.6rem;
+            border-radius: 999px;
+            background: rgba(34, 22, 33, 0.92);
+            margin: 0 auto;
+        }
+
+        .hero-panel {
+            background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,245,249,0.92));
+            border: 1px solid rgba(239, 111, 155, 0.08);
+        }
+
+        .btn-main {
+            background: linear-gradient(135deg, var(--rose), var(--peach));
             color: white;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform .25s ease, box-shadow .25s ease, opacity .25s ease;
+            box-shadow: 0 16px 30px rgba(239, 111, 155, 0.25);
         }
 
-        .btn-gradient:hover:not(:disabled) {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 25px rgba(249, 168, 201, 0.3);
+        .btn-main:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 36px rgba(239, 111, 155, 0.32);
+        }
+
+        .btn-soft {
+            background: white;
+            border: 1px solid rgba(239, 111, 155, 0.2);
+            transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+        }
+
+        .btn-soft:hover {
+            transform: translateY(-1px);
+            border-color: rgba(239, 111, 155, 0.45);
+            box-shadow: 0 12px 24px rgba(63, 52, 64, 0.08);
         }
 
         .day-card.today {
-            border: 2px solid var(--rose);
-            background: linear-gradient(145deg, #ffffff, #fffafc);
-            transform: scale(1.02);
-            z-index: 10;
-            box-shadow: 0 15px 35px rgba(249, 168, 201, 0.15);
+            border: 2px solid rgba(239, 111, 155, 0.45);
+            transform: translateY(-4px);
+            box-shadow: 0 26px 40px rgba(239, 111, 155, 0.14);
         }
 
-        .reward-locked { filter: grayscale(1) opacity(0.4); transition: all 0.5s ease; }
-        .reward-unlocked { transform: scale(1.05); border: 2px solid var(--rose); box-shadow: 0 10px 25px rgba(249, 168, 201, 0.2); transition: all 0.5s ease; }
+        .day-card.locked {
+            opacity: 0.45;
+            filter: grayscale(0.2);
+            pointer-events: none;
+        }
 
-        .progress-bar-fill { transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
-        .fade-in { animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .timer-display { font-variant-numeric: tabular-nums; }
+        .reward-locked {
+            filter: grayscale(1);
+            opacity: 0.5;
+        }
 
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #f9a8c9; border-radius: 10px; }
+        .reward-unlocked {
+            box-shadow: 0 18px 34px rgba(239, 111, 155, 0.16);
+            border-color: rgba(239, 111, 155, 0.35);
+            transform: translateY(-2px);
+        }
 
-        /* --- GLOBÁLNE ZVÄČŠENIE PÍSMA --- */
-        html { font-size: 18px !important; } /* Zväčší všetky štandardné texty o cca 15% */
-        
-        /* Výrazné zväčšenie pre najmenšie pomocné texty, aby neťahali oči */
-        .text-\[8px\] { font-size: 11px !important; line-height: 1.4 !important; }
-        .text-\[9px\] { font-size: 12.5px !important; line-height: 1.4 !important; }
-        .text-\[10px\] { font-size: 14px !important; line-height: 1.4 !important; }
-        .text-\[11px\] { font-size: 15px !important; line-height: 1.4 !important; }
+        .media-tile img,
+        .media-tile video {
+            transition: transform .45s ease;
+        }
+
+        .media-tile:hover img,
+        .media-tile:hover video {
+            transform: scale(1.05);
+        }
+
+        .progress-fill {
+            transition: width .8s ease;
+        }
+
+        .timer-display {
+            font-variant-numeric: tabular-nums;
+            letter-spacing: .08em;
+        }
+
+        .fade-in {
+            animation: fadeIn .8s ease forwards;
+        }
+
+        .safe-bottom {
+            padding-bottom: calc(8rem + env(safe-area-inset-bottom));
+        }
+
+        .skip-link {
+            position: absolute;
+            left: 1rem;
+            top: -3rem;
+            background: #111827;
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 999px;
+            z-index: 200;
+            transition: top .2s ease;
+        }
+
+        .skip-link:focus {
+            top: 1rem;
+        }
+
+        .mobile-stack {
+            padding: 0 0.9rem 6.5rem;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 0.9rem;
+        }
+
+        .native-card {
+            background: rgba(255,255,255,0.95);
+            border: 1px solid rgba(255,255,255,0.85);
+            border-radius: 28px;
+            box-shadow: 0 10px 22px rgba(63, 52, 64, 0.05);
+        }
+
+        .stat-pill {
+            border-radius: 24px;
+            background: #ffffff;
+            border: 1px solid rgba(239, 111, 155, 0.08);
+        }
+
+        .consent-btn {
+            width: 100%;
+            min-height: 52px;
+            border-radius: 18px;
+            font-weight: 800;
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 640px) {
+            .btn-main,
+            .btn-soft {
+                min-height: 48px;
+            }
+
+            body {
+                padding: 0.75rem;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+
+            *,
+            *::before,
+            *::after {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(18px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
-<body class="min-h-screen p-4 md:p-10 pb-32">
-
-    <div class="max-w-xl mx-auto space-y-8">
-        
-        <!-- Setup Screen -->
-        <div id="setup-screen" class="hidden wellness-card p-10 text-center space-y-8 fade-in">
-            <div class="text-6xl animate-bounce" style="animation-duration: 3s;">🌸</div>
-            <div>
-                <h1 class="text-3xl text-gray-800 mb-2">Tvoj nový začiatok</h1>
-                <p class="text-gray-500 italic">"Vybuduj si telo, v ktorom sa budeš cítiť doma."</p>
-            </div>
-            
-            <div class="bg-rose-50 p-5 rounded-2xl border border-rose-100 text-sm text-rose-600 leading-relaxed text-left">
-                <strong>💡 Ako to funguje?</strong> Za každý splnený tréning získaš <strong>fiktívne eurá</strong>. Šetri si ich a dopraj si vytúženú odmenu v reálnom živote bez výčitiek!
-            </div>
-
-            <div class="space-y-6">
-                <div class="text-left space-y-2">
-                    <label class="text-[10px] font-bold uppercase text-gray-400 tracking-widest pl-2">Štartovacia váha (kg)</label>
-                    <input type="number" id="start-weight" class="w-full p-4 text-center text-3xl font-bold border-2 border-pink-50 rounded-2xl focus:outline-none focus:border-rose-300 transition-colors" placeholder="00.0">
-                    <p id="weight-error" class="text-xs text-rose-500 font-bold mt-2 hidden text-center"></p>
+<body class="p-4 md:p-8 lg:p-10 safe-bottom">
+    <a href="#main-content" class="skip-link">Preskočiť na obsah</a>
+    <div class="app-shell">
+        <div class="phone-topbar">
+            <span>9:41</span>
+            <div class="phone-island" aria-hidden="true"></div>
+            <span>100%</span>
+        </div>
+        <section class="hero-panel rounded-[34px] mx-3 mt-2 p-6 overflow-hidden fade-in">
+            <div class="space-y-5">
+                <div class="flex items-start justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <img src="./icon%20(2).png" alt="Kvet wellness denníka" class="w-16 h-16 rounded-[20px] bg-white/70 p-2 shadow-sm">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-[0.35em] text-rose-500">Wellness deň</p>
+                            <h1 class="text-3xl text-stone-800 leading-tight mt-2">Dnes stačí urobiť malý krok pre seba.</h1>
+                        </div>
+                    </div>
+                    <button id="open-media-library-btn-top" class="btn-soft rounded-[18px] px-4 py-3 text-sm font-bold text-rose-600 shrink-0">Ukážky</button>
                 </div>
+                <p class="text-sm text-stone-600 leading-relaxed">Vyber si tempo a začni.</p>
+            </div>
+        </section>
+
+        <div class="mobile-stack">
+        <div id="setup-screen" class="hidden glass-card rounded-[32px] p-8 md:p-10 max-w-2xl mx-auto text-center space-y-8 fade-in">
+            <div class="space-y-4">
+                <img src="./icon%20(2).png" alt="Kvet wellness denníka" class="w-24 h-24 mx-auto drop-shadow-lg">
+                <h2 class="text-3xl text-stone-800">Vitaj v svojom jemnom rytme</h2>
+                <p class="text-stone-500 italic">„Aj krátky tréning sa ráta, keď ho spravíš pre seba.“</p>
             </div>
 
-            <button id="start-journey-btn" class="w-full btn-gradient py-5 rounded-2xl font-bold text-lg shadow-lg tracking-wide uppercase">Vstúpiť do denníka</button>
+            <div class="space-y-2 text-left">
+                <label for="start-weight" class="text-xs font-bold uppercase tracking-[0.25em] text-stone-400 block pl-1">Štartovacia váha (kg)</label>
+                <input id="start-weight" type="number" step="0.1" class="w-full rounded-[24px] border-2 border-rose-100 bg-white px-5 py-4 text-center text-3xl font-bold text-stone-800 outline-none focus:border-rose-300" placeholder="70.0">
+                <p id="weight-error" class="hidden text-sm font-bold text-rose-500 text-center"></p>
+            </div>
+
+            <button id="start-journey-btn" class="w-full btn-main rounded-[22px] py-4 text-base font-bold uppercase tracking-[0.2em]">Začať jemne</button>
         </div>
 
-        <!-- Main Dashboard -->
-        <div id="main-dashboard" class="hidden space-y-8 fade-in">
-            <header class="text-center space-y-3 pt-4">
-                <p class="text-xs font-bold text-rose-400 uppercase tracking-widest">Tvoja cesta za zdravím</p>
-                <h1 class="text-4xl text-gray-800" id="current-day-name">Dnes ži pre seba</h1>
-                <p id="daily-quote" class="text-sm italic text-gray-500 px-4 leading-relaxed"></p>
-            </header>
+        <main id="main-content" tabindex="-1">
+        <div id="main-dashboard" class="hidden space-y-6 fade-in">
+            <section class="space-y-4">
+                <div class="native-card p-6 space-y-6">
+                    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+                        <div class="space-y-2">
+                            <p class="text-xs font-bold uppercase tracking-[0.35em] text-rose-500">Tvoj dnešný rytmus</p>
+                            <h2 class="text-3xl md:text-4xl text-stone-800">Dnes stačí byť o kúsok bližšie k sebe</h2>
+                        </div>
+                        <button id="open-media-library-btn" class="btn-soft rounded-[18px] px-5 py-3 text-sm font-bold text-rose-600">Pozrieť ukážky</button>
+                    </div>
 
-            <div class="grid grid-cols-2 gap-4">
-                <div class="wellness-card p-5 text-center border-b-4 border-rose-300 relative overflow-hidden flex flex-col justify-center items-center">
-                    <p class="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-1">Moja Váha</p>
-                    <p class="text-3xl font-bold text-gray-800"><span id="current-weight">0</span> <span class="text-base text-gray-500 font-medium">kg</span></p>
-                    <div class="flex gap-2 mt-3 w-full">
-                        <button id="open-weight-modal-btn" class="flex-1 bg-rose-50 text-rose-500 hover:bg-rose-100 px-2 py-2 rounded-xl text-[10px] font-bold transition-colors">
-                            ✏️ Zapísať
-                        </button>
-                        <button id="open-history-modal-btn" class="flex-1 bg-gray-50 text-gray-500 hover:bg-gray-100 px-2 py-2 rounded-xl text-[10px] font-bold transition-colors">
-                            📊 História
-                        </button>
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <div class="stat-pill p-6 shadow-sm relative overflow-hidden">
+                            <div class="absolute -right-6 -top-6 text-6xl opacity-10">⚖️</div>
+                            <p class="text-xs uppercase tracking-[0.25em] text-stone-400 font-bold mb-2">Moja váha</p>
+                            <p class="text-3xl font-bold text-stone-800"><span id="current-weight">0</span> <span class="text-base font-medium text-stone-500">kg</span></p>
+                        </div>
+                        <div class="stat-pill p-6 shadow-sm relative overflow-hidden">
+                            <div class="absolute -right-6 -top-6 text-6xl opacity-10">💸</div>
+                            <p class="text-xs uppercase tracking-[0.25em] text-stone-400 font-bold mb-2">Mince pre radosť</p>
+                            <p class="text-3xl font-bold text-stone-800"><span id="balance">0</span> <span class="text-base font-medium text-stone-500">€</span></p>
+                        </div>
+                    </div>
+
+                    <div class="rounded-[28px] bg-gradient-to-br from-white to-rose-50 p-6 border border-rose-100">
+                        <div class="flex items-end justify-between gap-4 mb-4">
+                            <div>
+                                <p class="text-xs uppercase tracking-[0.25em] text-rose-500 font-bold">Ďalší míľnik</p>
+                                <h3 id="next-reward-title" class="text-2xl text-stone-800">Načítavam...</h3>
+                            </div>
+                            <p id="next-reward-price" class="text-sm font-bold text-stone-500">0 €</p>
+                        </div>
+                        <div class="h-4 rounded-full bg-white border border-rose-100 overflow-hidden">
+                            <div id="progress-bar" class="progress-fill h-full rounded-full bg-gradient-to-r from-rose-400 to-amber-300" style="width:0%"></div>
+                        </div>
+                        <p id="progress-text" class="mt-3 text-sm text-stone-500">Každý tréning sa ráta.</p>
                     </div>
                 </div>
-                <div class="wellness-card p-5 text-center border-b-4 border-lavender relative overflow-hidden flex flex-col justify-center items-center">
-                    <div class="absolute -right-4 -top-4 text-5xl opacity-5">💰</div>
-                    <p class="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-1">Fiktívne Úspory</p>
-                    <p class="text-3xl font-bold text-gray-800"><span id="balance">0</span> <span class="text-base text-gray-500 font-medium">€</span></p>
-                    <p class="text-[9px] text-gray-400 mt-2 bg-gray-50 w-full py-2 rounded-xl font-medium">Zarobené drinou</p>
-                </div>
-            </div>
+            </section>
 
-            <!-- Vizuálny Fotodenník -->
-            <div class="wellness-card p-6 bg-gradient-to-br from-orange-50 to-white border-orange-100">
-                <div class="flex justify-between items-center mb-3">
-                    <div class="flex items-center gap-3">
-                        <span class="text-2xl">📸</span>
-                        <h3 class="text-base font-bold text-gray-800">Môj tanier</h3>
+            <section class="space-y-6">
+                <div class="space-y-4">
+                    <div class="section-title px-1">
+                        <h3 class="text-2xl text-stone-800">Tvoj týždenný plán</h3>
+                        <span class="text-xs uppercase font-bold tracking-[0.25em] text-rose-500 bg-white/70 px-3 py-2 rounded-full">Dnes</span>
                     </div>
-                    <label class="bg-white border border-orange-200 text-orange-500 hover:bg-orange-100 px-3 py-2 rounded-xl text-xs font-bold cursor-pointer transition-colors shadow-sm flex items-center gap-1">
-                        + Odfotiť
-                        <input type="file" id="food-camera-input" accept="image/*" capture="environment" class="hidden">
-                    </label>
+                    <div id="weekly-plan-container" class="space-y-4"></div>
                 </div>
-                <p class="text-xs text-gray-600 mb-4 leading-relaxed">Nepočítaj kalórie. Odfot si každé jedlo pred tým, než ho zješ.</p>
-                
-                <div id="food-gallery">
-                    <!-- Tu sa objavia fotky jedla -->
-                </div>
-            </div>
 
-            <!-- Ukazovateľ pokroku k odmene -->
-            <div id="progress-section" class="wellness-card p-6 bg-gradient-to-br from-white to-rose-50 border-none shadow-sm">
-                <div class="flex justify-between items-end mb-3">
-                    <div>
-                        <p class="text-[10px] uppercase tracking-widest text-rose-400 font-bold">Ďalšia odmena</p>
-                        <h3 id="next-reward-title" class="text-lg font-bold text-gray-800 mt-1">Načítavam...</h3>
+                <div class="space-y-4">
+                    <div class="section-title px-1">
+                        <h3 class="text-2xl text-stone-800">Vlastné cviky</h3>
+                        <span class="text-xs uppercase font-bold tracking-[0.25em] text-stone-400">Podľa času</span>
                     </div>
-                    <p id="next-reward-price" class="text-sm font-bold text-gray-500">0 €</p>
+                    <div class="native-card p-5 space-y-4">
+                        <form id="custom-exercise-form" class="grid gap-3">
+                            <input id="custom-exercise-name" type="text" maxlength="40" class="w-full rounded-[20px] border border-rose-100 bg-white px-4 py-3 text-stone-800 outline-none focus:border-rose-300" placeholder="Napr. Chôdza">
+                            <div class="grid grid-cols-[1fr_auto] gap-3">
+                                <input id="custom-exercise-minutes" type="number" min="5" step="5" class="w-full rounded-[20px] border border-rose-100 bg-white px-4 py-3 text-stone-800 outline-none focus:border-rose-300" placeholder="10 min">
+                                <button type="submit" class="btn-main rounded-[20px] px-5 py-3 font-bold">Pridať</button>
+                            </div>
+                        </form>
+                        <p class="text-xs text-stone-400">Odmena sa ráta automaticky: 1 € za každých 10 min.</p>
+                        <div id="custom-exercises-list" class="space-y-3"></div>
+                    </div>
                 </div>
-                <div class="w-full bg-white rounded-full h-4 border border-rose-100 overflow-hidden">
-                    <div id="progress-bar" class="bg-gradient-to-r from-rose-300 to-peach-400 h-full progress-bar-fill rounded-full" style="width: 0%"></div>
-                </div>
-                <p id="progress-text" class="text-xs text-center text-gray-500 mt-3 font-medium">Cvič a odomkni si ďalšiu odmenu!</p>
-            </div>
 
-            <div class="space-y-4">
-                <h2 class="text-xl text-gray-800 px-2 flex justify-between items-center">
-                    Týždenný plán 
-                    <span class="text-[10px] text-rose-500 font-bold uppercase tracking-widest bg-rose-100 px-3 py-1 rounded-full shadow-sm">Dnes</span>
-                </h2>
-                <div id="weekly-plan-container" class="space-y-4">
+                <div class="space-y-4">
+                    <div class="section-title px-1">
+                        <h3 class="text-2xl text-stone-800">Galéria mojich snov</h3>
+                        <span class="text-xs uppercase font-bold tracking-[0.25em] text-stone-400">Odmeny</span>
+                    </div>
+                    <div id="rewards-gallery" class="grid grid-cols-2 gap-4"></div>
                 </div>
-            </div>
 
-            <div class="space-y-5">
-                <h2 class="text-xl text-gray-800 px-2 text-center">Galéria mojich snov</h2>
-                <div id="rewards-gallery" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                <div class="space-y-4">
+                    <div class="section-title px-1">
+                        <h3 class="text-2xl text-stone-800">Foto denník</h3>
+                        <span class="text-xs uppercase font-bold tracking-[0.25em] text-stone-400">Len v zariadení</span>
+                    </div>
+                    <div class="native-card p-5 space-y-4">
+                        <div id="photo-consent-card" class="rounded-[22px] bg-stone-50 border border-stone-200 p-4 space-y-3">
+                            <p class="text-sm text-stone-700">Fotku jedla alebo selfie si môžeš uložiť len do tohto zariadenia. Nikam sa neposiela a môžeš ju kedykoľvek vymazať.</p>
+                            <button id="grant-photo-consent-btn" type="button" class="btn-soft rounded-[18px] px-4 py-3 text-sm font-bold text-rose-600">Súhlasím s lokálnym uložením fotiek</button>
+                        </div>
+                        <div id="photo-journal-controls" class="hidden space-y-3">
+                            <div class="grid grid-cols-[1fr_auto] gap-3">
+                                <select id="photo-kind" class="w-full rounded-[20px] border border-rose-100 bg-white px-4 py-3 text-stone-800 outline-none focus:border-rose-300">
+                                    <option value="Jedlo">Jedlo</option>
+                                    <option value="Selfie">Selfie</option>
+                                    <option value="Pokrok">Pokrok</option>
+                                </select>
+                                <label for="photo-input" class="btn-main rounded-[20px] px-5 py-3 font-bold cursor-pointer text-center">Pridať fotku</label>
+                            </div>
+                            <input id="photo-input" type="file" accept="image/*" capture="environment" class="hidden">
+                            <p class="text-xs text-stone-400">Fotky ostávajú len v tomto prehliadači. Ak zmažeš dáta prehliadača, zmiznú.</p>
+                            <button id="clear-photo-journal-btn" type="button" class="text-xs font-bold uppercase tracking-[0.25em] text-stone-400 hover:text-stone-600 transition-colors text-left">Vymazať všetky fotky z tohto zariadenia</button>
+                        </div>
+                        <div id="photo-journal-list" class="grid grid-cols-2 gap-3"></div>
+                    </div>
                 </div>
-            </div>
+            </section>
 
-            <footer class="text-center py-8 space-y-5">
-                <button id="reset-btn" class="text-[10px] text-rose-300 hover:text-rose-500 uppercase font-bold tracking-widest transition-colors">Začať úplne odznova</button>
-                <div class="pt-4 border-t border-rose-50 flex flex-col gap-3 items-center">
-                    <button id="force-update-btn" class="text-[10px] bg-rose-50 text-rose-500 px-4 py-2 rounded-full font-bold hover:bg-rose-100 transition-colors shadow-sm">🔄 Skontrolovať aktualizácie</button>
-                    <button onclick="document.getElementById('cookie-banner').style.display='block'" class="text-[10px] text-gray-400 hover:text-gray-600 underline transition-colors">Nastavenie súkromia a cookies</button>
+            <footer class="text-center py-6 space-y-4">
+                <div class="flex items-center justify-center gap-4">
+                    <button id="refresh-btn" class="text-xs font-bold uppercase tracking-[0.25em] text-stone-400 hover:text-stone-600 transition-colors">Aktualizovať appku</button>
+                    <button id="reset-btn" class="text-xs font-bold uppercase tracking-[0.25em] text-rose-400 hover:text-rose-600 transition-colors">Začať úplne odznova</button>
+                </div>
+                <div class="pt-4 border-t border-white/40">
+                    <button type="button" onclick="document.getElementById('cookie-banner').style.display='block'" class="text-xs text-stone-400 hover:text-stone-600 underline">Nastavenie súkromia a cookies</button>
                 </div>
             </footer>
         </div>
-    </div>
-
-    <!-- MÓDAL NA KÚPU ODMENY -->
-    <div id="buy-reward-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-[70] p-6 opacity-0 transition-opacity duration-300">
-        <div class="bg-white rounded-[32px] p-8 w-full max-w-xs relative shadow-2xl transform scale-95 transition-transform duration-300" id="buy-reward-modal-content">
-            <button id="close-buy-reward-btn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 bg-gray-50 p-2 rounded-full">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-            <div class="text-4xl text-center mb-4">🎁</div>
-            <h3 class="text-xl text-gray-800 mb-2 font-serif text-center">Tvoja odmena</h3>
-            <p class="text-sm text-gray-500 text-center mb-6">Naozaj si chceš dopriať <strong id="buy-reward-title" class="text-gray-800">...</strong> a minúť <strong id="buy-reward-price" class="text-pink-500">...</strong>?</p>
-            <button id="confirm-buy-btn" class="w-full btn-gradient py-4 rounded-xl font-bold text-sm shadow-md mb-2">Áno, zaslúžim si to!</button>
-            <button id="cancel-buy-btn" class="w-full bg-gray-100 text-gray-600 py-3 rounded-xl font-bold text-sm hover:bg-gray-200 transition-colors">Ešte si to pošetrím</button>
+        </main>
         </div>
     </div>
 
-    <!-- MÓDAL NA ZÁPIS VÁHY -->
-    <div id="weight-input-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-6 opacity-0 transition-opacity duration-300">
-        <div class="bg-white rounded-[32px] p-8 w-full max-w-xs relative shadow-2xl transform scale-95 transition-transform duration-300" id="weight-input-modal-content">
-            <button id="close-weight-input-btn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 bg-gray-50 p-2 rounded-full">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-            <h3 class="text-xl text-gray-800 mb-4 font-serif text-center">Nová váha</h3>
-            <input type="number" id="new-weight-input" class="w-full p-4 text-center text-4xl font-bold border-2 border-pink-50 rounded-2xl focus:outline-none focus:border-rose-300 mb-4" placeholder="00.0">
-            <button id="save-weight-btn" class="w-full btn-gradient py-4 rounded-xl font-bold text-sm shadow-md">Uložiť a sledovať progres</button>
+    <div id="guide-modal" class="hidden fixed inset-0 z-50 bg-black/55 backdrop-blur-sm p-4 md:p-8 opacity-0 transition-opacity duration-300">
+        <div id="guide-modal-content" class="max-w-2xl mx-auto bg-white rounded-[34px] p-6 md:p-8 shadow-2xl relative max-h-[92vh] overflow-y-auto scale-95 transition-transform duration-300">
+            <button id="close-guide-btn" class="absolute top-5 right-5 w-11 h-11 rounded-full bg-stone-100 text-stone-600 font-bold">✕</button>
+            <h3 id="guide-title" class="text-3xl text-stone-800 pr-14">Focus dňa</h3>
+            <div id="guide-content" class="mt-6 space-y-6"></div>
+            <button id="close-guide-footer-btn" class="mt-8 w-full rounded-[20px] bg-gradient-to-r from-rose-100 to-orange-100 py-4 text-rose-600 font-bold">Idem na to</button>
         </div>
     </div>
 
-    <!-- MÓDAL NA HISTÓRIU VÁHY -->
-    <div id="weight-history-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-6 opacity-0 transition-opacity duration-300">
-        <div class="bg-white rounded-[32px] p-8 w-full max-w-sm relative shadow-2xl transform scale-95 transition-transform duration-300" id="weight-history-modal-content">
-            <button id="close-weight-history-btn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 bg-gray-50 p-2 rounded-full">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-            <h3 class="text-xl text-gray-800 mb-6 font-serif flex items-center gap-2"><span class="text-2xl">📊</span> Tvoj progres</h3>
-            <div id="weight-history-list" class="space-y-3 max-h-60 overflow-y-auto custom-scrollbar pr-2"></div>
-            <button id="close-history-footer-btn" class="w-full mt-6 bg-gray-100 text-gray-600 py-3 rounded-xl font-bold text-sm hover:bg-gray-200 transition-colors">Zavrieť</button>
-        </div>
-    </div>
+    <div id="exercise-modal" class="hidden fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm p-4 md:p-8 opacity-0 transition-opacity duration-300">
+        <div id="exercise-modal-content" class="max-w-3xl mx-auto bg-white rounded-[34px] p-6 md:p-8 shadow-2xl relative max-h-[92vh] overflow-y-auto scale-95 transition-transform duration-300">
+            <button id="close-modal-btn" class="absolute top-5 right-5 w-11 h-11 rounded-full bg-stone-100 text-stone-600 font-bold">✕</button>
+            <div class="grid lg:grid-cols-[1.15fr_0.85fr] gap-6">
+                <div class="space-y-4">
+                    <div>
+                        <p class="text-xs uppercase tracking-[0.25em] text-rose-500 font-bold">Detail cviku</p>
+                        <h3 id="modal-title" class="text-3xl text-stone-800 pr-14"></h3>
+                    </div>
 
-    <!-- Daily Guide Modal -->
-    <div id="guide-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-6 opacity-0 transition-opacity duration-300">
-        <div class="bg-white rounded-[32px] p-8 w-full max-w-sm relative shadow-2xl overflow-y-auto max-h-[90vh]" id="guide-modal-content">
-            <button id="close-guide-btn" class="absolute top-6 right-6 text-gray-300 hover:text-gray-600 bg-gray-50 p-2 rounded-full">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-            <h3 id="guide-title" class="text-2xl text-gray-800 mb-2 font-serif pr-8">Focus dňa</h3>
-            <div id="guide-content" class="space-y-6 mt-6"></div>
-            <button id="close-guide-footer-btn" class="w-full mt-8 bg-gradient-to-r from-rose-100 to-peach-100 text-rose-600 py-4 rounded-2xl font-bold shadow-sm hover:opacity-90 transition-opacity">Idem cvičiť!</button>
-        </div>
-    </div>
+                    <div class="rounded-[28px] overflow-hidden border border-stone-200 bg-stone-100 aspect-video">
+                        <img id="modal-image" src="" alt="Obrázok cviku" class="w-full h-full object-contain bg-stone-50">
+                    </div>
 
-    <!-- Exercise Detail & Timer Modal -->
-    <div id="exercise-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[60] p-4 md:p-6 opacity-0 transition-opacity duration-300">
-        <div class="bg-white rounded-[32px] p-6 w-full max-w-sm relative shadow-2xl overflow-y-auto max-h-[95vh]" id="exercise-modal-content">
-            <button id="close-modal-btn" class="absolute top-4 right-4 text-gray-600 bg-white/90 backdrop-blur rounded-full p-2 z-10 shadow-sm border border-gray-200 hover:bg-gray-100">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-            <h3 id="modal-title" class="text-xl text-gray-800 mb-3 font-serif font-bold pr-8"></h3>
-            <div class="rounded-2xl overflow-hidden mb-4 h-48 bg-gray-100 relative border border-gray-200">
-                <img id="modal-image" src="" alt="Cvik" class="w-full h-full object-cover">
-            </div>
-            <div id="modal-description" class="text-gray-700 text-sm leading-relaxed mb-4 bg-gray-50 p-4 rounded-2xl border border-gray-100"></div>
-            <div class="bg-rose-50 p-4 rounded-2xl text-center border border-rose-100 mt-4 shadow-sm">
-                <p class="text-[10px] font-bold text-rose-500 uppercase tracking-widest mb-1">Odpočet na cvičenie</p>
-                <div id="timer-display" class="timer-display text-5xl font-bold text-gray-800 mb-3 tracking-wider">00:45</div>
-                <div class="flex justify-center gap-2">
-                    <button id="timer-start" class="flex-1 bg-rose-400 text-white py-3 rounded-xl text-sm font-bold shadow-md hover:bg-rose-500 transition-colors">Štart</button>
-                    <button id="timer-reset" class="px-4 bg-white text-gray-600 py-3 rounded-xl text-sm font-bold shadow-sm border border-gray-200 hover:bg-gray-50">Reset</button>
+                    <div id="exercise-video-shell" class="rounded-[28px] overflow-hidden border border-stone-200 bg-black aspect-video">
+                        <video
+                            id="modal-video"
+                            class="w-full h-full object-contain bg-black"
+                            src=""
+                            autoplay
+                            muted
+                            loop
+                            playsinline
+                            loading="lazy"
+                        ></video>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <p id="modal-description" class="text-stone-600 leading-relaxed text-sm md:text-base"></p>
+
+                    <div class="rounded-[28px] bg-rose-50 border border-rose-100 p-5">
+                        <p class="text-xs font-bold uppercase tracking-[0.25em] text-rose-500 mb-2">Odpočet cvičenia</p>
+                        <div id="timer-display" class="timer-display text-5xl font-bold text-stone-800 mb-4">00:45</div>
+                        <div class="flex gap-3">
+                            <button id="timer-start" class="flex-1 rounded-[18px] bg-rose-400 text-white py-3 font-bold">Štart</button>
+                            <button id="timer-reset" class="px-5 rounded-[18px] bg-white border border-rose-100 text-stone-600 font-bold">Reset</button>
+                        </div>
+                    </div>
+
+                    <div class="rounded-[28px] bg-stone-50 border border-stone-200 p-5">
+                        <p class="text-xs font-bold uppercase tracking-[0.25em] text-stone-400 mb-3">Ako to robiť správne</p>
+                        <ul id="exercise-tips" class="space-y-2 text-sm text-stone-700 list-disc pl-5"></ul>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Cookie Banner pre EÚ GDPR a Analytics -->
-    <div id="cookie-banner" class="fixed bottom-4 left-4 right-4 md:left-auto md:w-[400px] bg-gray-900 text-white p-6 rounded-3xl z-[100] shadow-2xl hidden fade-in border border-gray-700">
-        <div class="flex flex-col gap-4">
-            <div>
-                <h4 class="text-sm font-bold mb-2">Ochrana tvojho súkromia</h4>
-                <p class="text-xs text-gray-300 leading-relaxed">
-                    Pre fungovanie appky a ukladanie pokroku využívame len lokálnu pamäť tvojho zariadenia. Taktiež prosíme o súhlas s použitím analytických cookies (Google Analytics), aby sme zistili, či sa ti appka páči.
-                </p>
-            </div>
-            <div class="flex gap-3 mt-2">
-                <button id="reject-cookies" class="flex-1 bg-transparent border border-gray-600 text-gray-300 py-3 rounded-xl text-xs font-bold hover:bg-gray-800 transition-colors">Zamietnuť</button>
-                <button id="accept-cookies" class="flex-1 bg-white text-gray-900 py-3 rounded-xl text-xs font-bold hover:bg-gray-100 transition-colors shadow-lg">Súhlasím</button>
+    <div id="media-modal" class="hidden fixed inset-0 z-[70] bg-black/75 backdrop-blur-sm p-4 md:p-8 opacity-0 transition-opacity duration-300">
+        <div id="media-modal-content" class="max-w-4xl mx-auto bg-white rounded-[34px] p-6 md:p-8 shadow-2xl relative max-h-[92vh] overflow-y-auto scale-95 transition-transform duration-300">
+            <button id="close-media-btn" class="absolute top-5 right-5 w-11 h-11 rounded-full bg-stone-100 text-stone-600 font-bold">✕</button>
+            <div class="space-y-5">
+                <div>
+                    <p id="media-modal-type" class="text-xs uppercase tracking-[0.25em] text-rose-500 font-bold"></p>
+                    <h3 id="media-modal-title" class="text-3xl text-stone-800 pr-14"></h3>
+                    <p id="media-modal-description" class="text-stone-600 mt-2"></p>
+                </div>
+                <div id="media-modal-frame" class="rounded-[28px] overflow-hidden border border-stone-200 bg-stone-100"></div>
             </div>
         </div>
     </div>
 
-    <canvas id="image-compressor" class="hidden"></canvas>
+    <div id="cookie-banner" class="hidden fixed bottom-4 right-4 left-4 md:left-auto md:max-w-md z-[100] rounded-[30px] bg-stone-900 text-white p-6 shadow-2xl border border-stone-700 fade-in">
+        <div class="space-y-4">
+            <div>
+                <h4 class="text-base font-bold">Ochrana súkromia</h4>
+                <p class="text-sm text-stone-300 leading-relaxed mt-2">
+                    Pokrok si appka ukladá lokálne v tvojom prehliadači. Voliteľný je už len analytický súhlas. Ukážky cvikov sa prehrávajú lokálne priamo z appky.
+                </p>
+            </div>
+            <div class="rounded-[18px] bg-stone-800 p-4 text-sm text-stone-300 leading-relaxed">
+                <strong class="text-white">Len nevyhnutné</strong> ponechá len lokálne uložený pokrok.
+                <br>
+                <strong class="text-white">Všetky</strong> zapne analytiku na zlepšovanie appky.
+                <br>
+                <strong class="text-white">Nesúhlasím</strong> vypne všetko voliteľné.
+            </div>
+            <div class="space-y-3">
+                <button id="accept-all-btn" class="consent-btn btn-main">Všetky</button>
+                <button id="essential-only-btn" class="consent-btn bg-white text-stone-900">Len nevyhnutné</button>
+                <button id="decline-all-btn" class="consent-btn border border-stone-600 text-stone-200 bg-transparent">Nesúhlasím</button>
+            </div>
+        </div>
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const STORAGE_KEY = 'wellness_gold_v4';
-            const CONSENT_KEY = 'wellness_consent_analytics_eu';
-            
-            // --- STOPKY LOGIKA ---
+            const STORAGE_KEY = 'wellness_gold_v3';
+            const CONSENT_KEY = 'wellness_consent_preferences_v2';
+            const GA_ID = 'G-TVOJE_ID_TU';
+            const PHOTO_DB_NAME = 'wellness_photo_journal_v1';
+            const PHOTO_STORE_NAME = 'photos';
+
+            const exercises = {
+                drepy: {
+                    title: '20x Drepy',
+                    desc: 'Základ na zadok a stehná. Choď dole akoby si si sadala na stoličku, kolená drž stabilne a váhu prenášaj do päty.',
+                    img: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1200&q=80',
+                    video: './wellness-media/squats.mp4',
+                    tips: ['Drž hrudník otvorený a chrbát rovný.', 'Kolená smeruj v línii so špičkami.', 'Zdvih rob cez päty, nie cez prsty.']
+                },
+                kliky: {
+                    title: '15x Dámske kliky',
+                    desc: 'Skvelé na spevnenie rúk a hrudníka. Opri sa o kolená, zapoj brucho a pomaly spúšťaj hrudník smerom k podložke.',
+                    img: 'https://images.unsplash.com/photo-1598971639058-9993af625236?auto=format&fit=crop&w=1200&q=80',
+                    video: './wellness-media/pushups.mp4',
+                    tips: ['Brucho maj spevnené počas celého pohybu.', 'Lakte netlač úplne od tela.', 'Choď len do rozsahu, kde držíš techniku.']
+                },
+                jumping_jacks: {
+                    title: '30x Jumping Jacks',
+                    desc: 'Rýchle kardio na zahriatie. Svižne rozpaž a rozkroč sa, potom sa vráť naspäť do základného postoja.',
+                    img: 'https://images.unsplash.com/photo-1601422407692-ec4eeec1d9b3?auto=format&fit=crop&w=1200&q=80',
+                    video: './wellness-media/jumping-jacks.mp4',
+                    tips: ['Dopadaj mäkko cez stred chodidla.', 'Dýchaj pravidelne, nespomaľuj zbytočne.', 'Ramien sa nesnaž dvíhať k ušiam.']
+                },
+                plank: {
+                    title: '45 sek. Plank',
+                    desc: 'Cvik na pevný stred tela. Opri sa o predlaktia, zadok nedvíhaj vysoko a nenechaj ho ani padnúť.',
+                    img: 'https://images.unsplash.com/photo-1518310383802-640c2de311b2?auto=format&fit=crop&w=1200&q=80',
+                    video: './wellness-media/plank.mp4',
+                    tips: ['Predstav si rovnú líniu od hlavy po päty.', 'Ramená drž nad lakťami.', 'Dýchaj plynulo, nezadržuj dych.']
+                },
+                vypady: {
+                    title: '10x Výpady na každú nohu',
+                    desc: 'Výpady tvarujú nohy aj zadok. Urob dlhý krok vpred, zadné koleno smeruje k zemi a trup nechaj vzpriamený.',
+                    img: 'https://images.unsplash.com/photo-1434682881908-b43d0467b798?auto=format&fit=crop&w=1200&q=80',
+                    video: './wellness-media/lunges.mp4',
+                    tips: ['Predné koleno netlač cez špičku.', 'Trup drž rovno, nepredkláňaj sa.', 'Tempo maj pomalé a kontrolované.']
+                },
+                brusaky: {
+                    title: '20x Skracovačky',
+                    desc: 'Krátky, ale účinný pohyb na brucho. Dvíhaj lopatky od podložky a nesťahuj krk rukami.',
+                    img: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=1200&q=80',
+                    video: './wellness-media/crunches.mp4',
+                    tips: ['Bradu nechaj jemne od hrudníka.', 'Pohyb vedie brucho, nie ruky.', 'Nevychádzaj príliš vysoko, stačí kratší zdvih.']
+                }
+            };
+
+            const rewardsCatalog = [
+                { title: 'Pleťová maska', price: 4, img: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=900&q=80' },
+                { title: 'Kvalitný čaj', price: 8, img: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=80' },
+                { title: 'Nová kniha', price: 14, img: 'https://images.unsplash.com/photo-1516979187457-637abb4f9353?auto=format&fit=crop&w=900&q=80' },
+                { title: 'Krásne legíny', price: 22, img: 'https://images.unsplash.com/photo-1506629905607-d9fdd4d868d2?auto=format&fit=crop&w=900&q=80' },
+                { title: 'Nové tenisky', price: 36, img: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=80' },
+                { title: 'Wellness víkend', price: 60, img: 'https://images.unsplash.com/photo-1519823551278-64ac92734fb1?auto=format&fit=crop&w=900&q=80' }
+            ];
+
+            const mediaLibrary = [
+                {
+                    id: 'hero-breath',
+                    type: 'video',
+                    title: 'Drepy',
+                    description: 'Krátka ukážka na rozhýbanie nôh a zadku.',
+                    thumb: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1200&q=80',
+                    video: './wellness-media/squats.mp4'
+                },
+                {
+                    id: 'focus-flow',
+                    type: 'video',
+                    title: 'Kliky',
+                    description: 'Tichá slučka, podľa ktorej si môžeš skontrolovať pohyb.',
+                    thumb: 'https://images.unsplash.com/photo-1598971639058-9993af625236?auto=format&fit=crop&w=1200&q=80',
+                    video: './wellness-media/pushups.mp4'
+                },
+                {
+                    id: 'stretch-reset',
+                    type: 'video',
+                    title: 'Plank',
+                    description: 'Krátka lokálna ukážka planku prehrávaná priamo v appke.',
+                    thumb: 'https://images.unsplash.com/photo-1518310383802-640c2de311b2?auto=format&fit=crop&w=1200&q=80',
+                    video: './wellness-media/plank.mp4'
+                },
+                {
+                    id: 'jumping-jacks-demo',
+                    type: 'video',
+                    title: 'Jumping Jacks',
+                    description: 'Rýchle kardio na rozprúdenie energie.',
+                    thumb: 'https://images.unsplash.com/photo-1601422407692-ec4eeec1d9b3?auto=format&fit=crop&w=1200&q=80',
+                    video: './wellness-media/jumping-jacks.mp4'
+                },
+                {
+                    id: 'lunges-demo',
+                    type: 'video',
+                    title: 'Výpady',
+                    description: 'Jemná ukážka techniky pre stabilný krok a pevné nohy.',
+                    thumb: 'https://images.unsplash.com/photo-1434682881908-b43d0467b798?auto=format&fit=crop&w=1200&q=80',
+                    video: './wellness-media/lunges.mp4'
+                },
+                {
+                    id: 'crunches-demo',
+                    type: 'video',
+                    title: 'Skracovačky',
+                    description: 'Krátka ukážka, aby si si vedela nastaviť rozsah pohybu.',
+                    thumb: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=1200&q=80',
+                    video: './wellness-media/crunches.mp4'
+                }
+            ];
+
+            const plans = [
+                {
+                    day: 'Pondelok',
+                    light: { focus: 'Rýchly štart', reward: 2, ex: ['drepy', 'plank'], time: '10 min', diet: 'Daj si pohár vody s citrónom hneď po prebudení.' },
+                    deep: { focus: 'Full Body Pondelok', reward: 5, ex: ['jumping_jacks', 'drepy', 'kliky', 'plank'], time: '25 min', diet: 'Bielkovinové raňajky ti pomôžu s energiou na celý deň.' }
+                },
+                {
+                    day: 'Utorok',
+                    light: { focus: 'Pevné bruško', reward: 2, ex: ['plank', 'brusaky'], time: '10 min', diet: 'Namiesto sladkostí si dnes daj hrsť orechov alebo jogurt.' },
+                    deep: { focus: 'Silný stred tela', reward: 5, ex: ['jumping_jacks', 'plank', 'brusaky', 'drepy'], time: '25 min', diet: 'Na obed zvoľ viac zeleniny a stabilný zdroj bielkovín.' }
+                },
+                {
+                    day: 'Streda',
+                    light: { focus: 'Pohyb pre radosť', reward: 2, ex: ['jumping_jacks', 'vypady'], time: '10 min', diet: 'Dnes mysli na pitný režim. Dva litre vody sú dobrý základ.' },
+                    deep: { focus: 'Kardio a nohy', reward: 5, ex: ['jumping_jacks', 'drepy', 'vypady'], time: '25 min', diet: 'Po cvičení doplň energiu banánom alebo ľahkým snackom.' }
+                },
+                {
+                    day: 'Štvrtok',
+                    light: { focus: 'Pevný postoj', reward: 2, ex: ['plank', 'kliky'], time: '10 min', diet: 'Skús dnes jednoduchšie sacharidy nahradiť ryžou, quinoou alebo batatmi.' },
+                    deep: { focus: 'Spodná a vrchná časť', reward: 5, ex: ['drepy', 'kliky', 'vypady', 'brusaky'], time: '30 min', diet: 'Ryba alebo vajcia dodajú telu kvalitné tuky aj bielkoviny.' }
+                },
+                {
+                    day: 'Piatok',
+                    light: { focus: 'Predvíkendový reset', reward: 2, ex: ['drepy', 'plank'], time: '10 min', diet: 'Ľahšia večera ti pomôže s lepšou regeneráciou.' },
+                    deep: { focus: 'HIIT piatok', reward: 5, ex: ['jumping_jacks', 'drepy', 'kliky', 'vypady', 'brusaky'], time: '35 min', diet: 'Po náročnejšom tréningu si dopraj poriadne jedlo bez výčitiek.' }
+                },
+                {
+                    day: 'Sobota',
+                    light: { focus: 'Len tak pre seba', reward: 2, ex: ['brusaky', 'plank'], time: '10 min', diet: 'Cez víkend jedz pomalšie a všímaj si, kedy máš dosť.' },
+                    deep: { focus: 'Sobotňajšia drina', reward: 6, ex: ['jumping_jacks', 'drepy', 'vypady', 'plank'], time: '30 min', diet: 'Ak príde chuť na sladké, skús pár kociek horkej čokolády.' }
+                },
+                {
+                    day: 'Nedeľa',
+                    focus: 'Zaslúžený oddych',
+                    ex: [],
+                    time: 'Celý deň',
+                    diet: 'Priprav si jedlo alebo plán na pondelok. Uľahčí ti to nový týždeň.'
+                }
+            ];
+
             let timerInterval;
             let timeLeft = 45;
             let isRunning = false;
-            
+
             const timerDisplay = document.getElementById('timer-display');
             const btnStart = document.getElementById('timer-start');
             const btnReset = document.getElementById('timer-reset');
+            const customExerciseForm = document.getElementById('custom-exercise-form');
+            const customExerciseNameInput = document.getElementById('custom-exercise-name');
+            const customExerciseMinutesInput = document.getElementById('custom-exercise-minutes');
+            const photoConsentCard = document.getElementById('photo-consent-card');
+            const photoJournalControls = document.getElementById('photo-journal-controls');
+            const photoInput = document.getElementById('photo-input');
+            const photoKindInput = document.getElementById('photo-kind');
 
-            function updateTimerDisplay() {
-                if (!timerDisplay) return;
-                const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
-                const s = (timeLeft % 60).toString().padStart(2, '0');
-                timerDisplay.textContent = `${m}:${s}`;
+            const normalizeData = (data) => ({
+                startWeight: data?.startWeight ?? 0,
+                currentWeight: data?.currentWeight ?? data?.startWeight ?? 0,
+                balance: data?.balance ?? 0,
+                completedDays: Array.isArray(data?.completedDays) ? data.completedDays : [],
+                customExercises: Array.isArray(data?.customExercises) ? data.customExercises : []
+            });
+            const load = () => {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (!raw) return null;
+                try {
+                    return normalizeData(JSON.parse(raw));
+                } catch {
+                    return null;
+                }
+            };
+            const save = (data) => localStorage.setItem(STORAGE_KEY, JSON.stringify(normalizeData(data)));
+            const loadConsent = () => {
+                const raw = localStorage.getItem(CONSENT_KEY);
+                if (!raw) return null;
+                try {
+                    return JSON.parse(raw);
+                } catch {
+                    return null;
+                }
+            };
+            const saveConsent = (consent) => localStorage.setItem(CONSENT_KEY, JSON.stringify(consent));
+
+            function openPhotoDb() {
+                return new Promise((resolve, reject) => {
+                    const request = indexedDB.open(PHOTO_DB_NAME, 1);
+                    request.onupgradeneeded = () => {
+                        const db = request.result;
+                        if (!db.objectStoreNames.contains(PHOTO_STORE_NAME)) {
+                            db.createObjectStore(PHOTO_STORE_NAME, { keyPath: 'id' });
+                        }
+                    };
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
             }
 
-            function startTimer() {
-                if (isRunning) {
-                    clearInterval(timerInterval);
-                    if (btnStart) {
-                        btnStart.textContent = "Pokračovať";
-                        btnStart.classList.replace('bg-orange-400', 'bg-rose-400');
-                    }
-                    isRunning = false;
-                } else {
-                    isRunning = true;
-                    if (btnStart) {
-                        btnStart.textContent = "Pauza";
-                        btnStart.classList.replace('bg-rose-400', 'bg-orange-400');
-                    }
-                    timerInterval = setInterval(() => {
-                        if (timeLeft > 0) {
-                            timeLeft--;
-                            updateTimerDisplay();
-                        } else {
-                            clearInterval(timerInterval);
-                            isRunning = false;
-                            if (btnStart) {
-                                btnStart.textContent = "Hotovo! 🎉";
-                                btnStart.classList.replace('bg-orange-400', 'bg-green-500');
-                            }
-                            confetti({ particleCount: 50, spread: 40, origin: { y: 0.8 } });
-                        }
-                    }, 1000);
+            async function savePhotoEntry(entry) {
+                const db = await openPhotoDb();
+                return new Promise((resolve, reject) => {
+                    const transaction = db.transaction(PHOTO_STORE_NAME, 'readwrite');
+                    transaction.objectStore(PHOTO_STORE_NAME).put(entry);
+                    transaction.oncomplete = () => {
+                        db.close();
+                        resolve();
+                    };
+                    transaction.onerror = () => {
+                        db.close();
+                        reject(transaction.error);
+                    };
+                });
+            }
+
+            async function loadPhotoEntries() {
+                const db = await openPhotoDb();
+                return new Promise((resolve, reject) => {
+                    const transaction = db.transaction(PHOTO_STORE_NAME, 'readonly');
+                    const request = transaction.objectStore(PHOTO_STORE_NAME).getAll();
+                    request.onsuccess = () => {
+                        db.close();
+                        resolve((request.result || []).sort((a, b) => b.createdAt.localeCompare(a.createdAt)));
+                    };
+                    request.onerror = () => {
+                        db.close();
+                        reject(request.error);
+                    };
+                });
+            }
+
+            async function deletePhotoEntry(id) {
+                const db = await openPhotoDb();
+                return new Promise((resolve, reject) => {
+                    const transaction = db.transaction(PHOTO_STORE_NAME, 'readwrite');
+                    transaction.objectStore(PHOTO_STORE_NAME).delete(id);
+                    transaction.oncomplete = () => {
+                        db.close();
+                        resolve();
+                    };
+                    transaction.onerror = () => {
+                        db.close();
+                        reject(transaction.error);
+                    };
+                });
+            }
+
+            async function clearAllPhotoEntries() {
+                const db = await openPhotoDb();
+                return new Promise((resolve, reject) => {
+                    const transaction = db.transaction(PHOTO_STORE_NAME, 'readwrite');
+                    transaction.objectStore(PHOTO_STORE_NAME).clear();
+                    transaction.oncomplete = () => {
+                        db.close();
+                        resolve();
+                    };
+                    transaction.onerror = () => {
+                        db.close();
+                        reject(transaction.error);
+                    };
+                });
+            }
+
+            function ensureAnalyticsLoaded() {
+                if (document.querySelector(`script[data-ga-loader="${GA_ID}"]`)) return;
+                const script = document.createElement('script');
+                script.async = true;
+                script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
+                script.dataset.gaLoader = GA_ID;
+                document.head.appendChild(script);
+                gtag('js', new Date());
+                gtag('config', GA_ID, { anonymize_ip: true });
+            }
+
+            function applyConsent(consent) {
+                const analyticsGranted = Boolean(consent?.analytics);
+                if (analyticsGranted) ensureAnalyticsLoaded();
+                if (typeof gtag === 'function') {
+                    gtag('consent', 'update', {
+                        analytics_storage: analyticsGranted ? 'granted' : 'denied',
+                        ad_storage: 'denied',
+                        ad_user_data: 'denied',
+                        ad_personalization: 'denied'
+                    });
                 }
+            }
+
+            function updateTimerDisplay() {
+                const mins = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+                const secs = (timeLeft % 60).toString().padStart(2, '0');
+                timerDisplay.textContent = `${mins}:${secs}`;
             }
 
             function resetTimer() {
                 clearInterval(timerInterval);
                 isRunning = false;
-                timeLeft = 45; 
-                if (btnStart) {
-                    btnStart.textContent = "Štart";
-                    btnStart.classList.remove('bg-orange-400', 'bg-green-500');
-                    btnStart.classList.add('bg-rose-400');
-                }
+                timeLeft = 45;
+                btnStart.textContent = 'Štart';
+                btnStart.className = 'flex-1 rounded-[18px] bg-rose-400 text-white py-3 font-bold';
                 updateTimerDisplay();
             }
 
-            if (btnStart && btnReset) {
-                btnStart.addEventListener('click', startTimer);
-                btnReset.addEventListener('click', resetTimer);
+            function startTimer() {
+                if (isRunning) {
+                    clearInterval(timerInterval);
+                    isRunning = false;
+                    btnStart.textContent = 'Pokračovať';
+                    btnStart.className = 'flex-1 rounded-[18px] bg-amber-400 text-white py-3 font-bold';
+                    return;
+                }
+
+                isRunning = true;
+                btnStart.textContent = 'Pauza';
+                btnStart.className = 'flex-1 rounded-[18px] bg-orange-400 text-white py-3 font-bold';
+
+                timerInterval = setInterval(() => {
+                    if (timeLeft > 0) {
+                        timeLeft -= 1;
+                        updateTimerDisplay();
+                        return;
+                    }
+
+                    clearInterval(timerInterval);
+                    isRunning = false;
+                    btnStart.textContent = 'Hotovo';
+                    btnStart.className = 'flex-1 rounded-[18px] bg-emerald-500 text-white py-3 font-bold';
+                    confetti({
+                        particleCount: 80,
+                        spread: 70,
+                        origin: { y: 0.75 },
+                        colors: ['#ef6f9b', '#f8b78a', '#eab308', '#ffffff']
+                    });
+                }, 1000);
             }
 
-            const dailyQuotes = [
-                "Nedeľa: Ideálny čas na plánovanie. Priprav si ciele a zdravé jedlo na zajtra. Tvoje budúce ja ti poďakuje.",
-                "Pondelok: Nový týždeň, čistý štít! Nevynechaj dnešný tréning, nastaví ti víťazný tón na ďalších 6 dní.",
-                "Utorok: Motivácia ťa naštartuje, ale až zvyk ťa udrží v pohybe. Dnes budujeme zvyk.",
-                "Streda: Sme v polovici! Ak to išlo doteraz ťažko, zhlboka sa nadýchni. Ak ľahko, pridaj na tempe.",
-                "Štvrtok: Pamätaj, že úspech nie je o tom, byť dokonalá. Je to o tom, nevzdať sa, keď si unavená.",
-                "Piatok: Blíži sa víkend! Zamakaj dnes naplno, aby si si víkendový oddych a dobré jedlo zaslúžila.",
-                "Sobota: Telo potrebuje aj lásku. Vybehni na prechádzku, pretiahni sa a poďakuj telu za to, čo dokáže." 
-            ];
+            function openModal(id) {
+                const modal = document.getElementById(id);
+                const content = document.getElementById(`${id}-content`);
+                modal.classList.remove('hidden');
+                requestAnimationFrame(() => {
+                    modal.classList.remove('opacity-0');
+                    content.classList.remove('scale-95');
+                });
+            }
 
-            const exercises = {
-                drepy: { 
-                    title: "Drepy (Squats)", 
-                    desc: "<strong>Ako na to:</strong><br>1. Postav sa na šírku ramien, špičky idú jemne von.<br>2. Predstav si, že si sadáš na neviditeľnú stoličku dozadu.<br>3. Váhu drž na pätách (špičky sa nesmú odliepať).<br>4. Chrbát je celý čas rovný, nehrb sa.<br><em>Cieľ: 20 poctivých opakovaní.</em>", 
-                    img: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=600" 
-                },
-                kliky: { 
-                    title: "Dámske kliky", 
-                    desc: "<strong>Ako na to:</strong><br>1. Kľakni si na podložku a opri sa o dlane (širšie ako ramená).<br>2. Prekríž si členky vo vzduchu.<br>3. Spevni brucho, aby ti zadok nepadal dole ani netrčal hore.<br>4. S nádychom pomaly krč lakte, s výdychom sa odtlač späť.<br><em>Cieľ: 15 opakovaní.</em>", 
-                    img: "https://images.unsplash.com/photo-1598266663975-d2a67734a727?w=600" 
-                },
-                jumping_jacks: { 
-                    title: "Jumping Jacks", 
-                    desc: "<strong>Ako na to:</strong><br>1. Postav sa rovno s rukami pri tele.<br>2. V jednom plynulom výskoku rozkroč nohy od seba a zároveň tleskni rukami nad hlavou.<br>3. Okamžite vyskoč späť do počiatočnej pozície.<br><em>Tip: Výborné kardio na zahriatie! Daj si svižné tempo a urob 30 opakovaní.</em>", 
-                    img: "jumping.gif" 
-                },
-                plank: { 
-                    title: "Doska (Plank)", 
-                    desc: "<strong>Ako na to:</strong><br>1. Ľahni si na brucho a dvihni sa na predlaktia a špičky nôh.<br>2. Tvoje telo musí tvoriť rovnú 'dosku' od hlavy až po päty.<br>3. Zhlboka dýchaj a pevne zatni brucho aj zadok.<br><em>Tip: Ak ťa bolia kríže, vystrč zadok trošilinku vyššie. Vydrž aspoň 45 sekúnd.</em>", 
-                    img: "https://images.unsplash.com/photo-1566241440091-ec10de8f611a?w=600" 
-                },
-                vypady: { 
-                    title: "Výpady vpred", 
-                    desc: "<strong>Ako na to:</strong><br>1. Postav sa rovno a urob jeden dlhý krok vpred.<br>2. Pokrč obe kolená, zadné koleno smeruje kúsok nad zem.<br>3. Predné koleno nesmie presiahnuť pred tvoju špičku na nohe.<br>4. Odtlač sa prednou nohou a vráť sa späť.<br><em>Cieľ: 10x na pravú, 10x na ľavú nohu.</em>", 
-                    img: "https://images.unsplash.com/photo-1434608519344-49d77a699e1d?w=600" 
-                },
-                brusaky: { 
-                    title: "Skracovačky na brucho", 
-                    desc: "<strong>Čo sú to skracovačky?</strong> Je to šetrnejšia a lepšia verzia klasických 'brušákov'.<br><br><strong>Ako na to:</strong><br>1. Ľahni si na chrbát, pokrč kolená a chodidlá opri o zem.<br>2. Ruky si daj jemne za uši (neťahaj si nimi krk!).<br>3. S výdychom odlep len lopatky a ramená od zeme, zadok a spodný chrbát zostávajú na zemi.<br>4. Brada smeruje hore do stropu, akoby si pod ňou mala jablko.<br><em>Cieľ: 20 sústredených opakovaní.</em>", 
-                    img: "https://images.unsplash.com/photo-1577221084712-45b044c67f13?w=600" 
+            function closeModal(id) {
+                const modal = document.getElementById(id);
+                const content = document.getElementById(`${id}-content`);
+                modal.classList.add('opacity-0');
+                content.classList.add('scale-95');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 250);
+            }
+
+            function stopEmbeddedMedia() {
+                const modalVideo = document.getElementById('modal-video');
+                const mediaFrame = document.getElementById('media-modal-frame');
+                const exerciseVideoShell = document.getElementById('exercise-video-shell');
+                modalVideo.src = '';
+                mediaFrame.innerHTML = '';
+                exerciseVideoShell.innerHTML = `
+                    <video
+                        id="modal-video"
+                        class="w-full h-full"
+                        src=""
+                        autoplay
+                        muted
+                        loop
+                        playsinline
+                        loading="lazy"
+                    ></video>
+                `;
+            }
+
+            function renderProgressBar(balance) {
+                const nextReward = rewardsCatalog.find((item) => item.price > balance);
+                const progressBar = document.getElementById('progress-bar');
+                const progressText = document.getElementById('progress-text');
+
+                if (!nextReward) {
+                    document.getElementById('next-reward-title').textContent = 'Všetko odomknuté';
+                    document.getElementById('next-reward-price').textContent = '🏆';
+                    progressBar.style.width = '100%';
+                    progressText.textContent = 'Nasporené máš na všetko. Toto už je krásny progres.';
+                    return;
                 }
-            };
 
-            const rewardsCatalog = [
-                { title: "Kvalitná káva / Koláčik", price: 10, img: "https://images.unsplash.com/photo-1551024601-bec78aea704b?w=300" },
-                { title: "Pleťová maska", price: 25, img: "https://images.unsplash.com/photo-1596755389378-c31d21fd1273?w=300" },
-                { title: "Kniha / Časopis", price: 50, img: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=300" },
-                { title: "Krásne športové legíny", price: 100, img: "https://images.unsplash.com/photo-1518310383802-640c2de311b2?w=300" },
-                { title: "Nové tenisky", price: 200, img: "https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=300" },
-                { title: "Víkendový Wellness", price: 400, img: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=300" }
-            ];
+                const percent = Math.max(0, Math.min(100, Math.floor((balance / nextReward.price) * 100)));
+                document.getElementById('next-reward-title').textContent = nextReward.title;
+                document.getElementById('next-reward-price').textContent = `${nextReward.price} €`;
+                progressBar.style.width = `${percent}%`;
+                progressText.innerHTML = `Chýba ti <strong>${nextReward.price - balance} €</strong>. Pokračuj ďalej.`;
+            }
 
-            const plans = [
-                { 
-                    day: "Nedeľa", 
-                    focus: "Zaslúžený oddych", 
-                    ex: [], 
-                    time: "Celý deň", 
-                    diet: "Priprav si jedlo do krabičiek na pondelok. Ušetríš čas aj kalórie z rýchleho občerstvenia." 
-                },
-                { 
-                    day: "Pondelok", 
-                    light: { focus: "Rýchly štart", reward: 10, ex: ["drepy", "plank"], time: "10 min", diet: "Daj si dnes pohár vlažnej vody s citrónom hneď po prebudení na štart trávenia." }, 
-                    deep: { focus: "Full Body Pondelok", reward: 25, ex: ["jumping_jacks", "drepy", "kliky", "plank"], time: "25 min", diet: "Bohaté bielkovinové raňajky (vajcia/tvaroh) ti dodajú silu a zastavia chute na sladké." } 
-                },
-                { 
-                    day: "Utorok", 
-                    light: { focus: "Pevné bruško", reward: 10, ex: ["plank", "brusaky"], time: "10 min", diet: "Dnes vyskúšaj úplne vynechať pridaný cukor. Ak máš chuť, siahni po jablku alebo orechoch." }, 
-                    deep: { focus: "Silný stred tela", reward: 25, ex: ["jumping_jacks", "plank", "brusaky", "drepy"], time: "25 min", diet: "Na obed zvoľ chudé mäso s kopcom čerstvej zeleniny podľa 'Pravidla dlane'." } 
-                },
-                { 
-                    day: "Streda", 
-                    light: { focus: "Pohyb pre radosť", reward: 10, ex: ["jumping_jacks", "vypady"], time: "10 min", diet: "Nezabudni piť! Vypi dnes aspoň 2 litre čistej vody, často si smäd mýlime s hladom." }, 
-                    deep: { focus: "Kardio & Nohy", reward: 25, ex: ["jumping_jacks", "drepy", "vypady"], time: "25 min", diet: "Po tomto cvičení potrebuješ doplniť energiu – daj si menší banán alebo kvalitný jogurt." } 
-                },
-                { 
-                    day: "Štvrtok", 
-                    light: { focus: "Pevný postoj", reward: 10, ex: ["plank", "kliky"], time: "10 min", diet: "Skús večer obmedziť ťažké pečivo. Nahraď ho ľahkou polievkou alebo šalátom." }, 
-                    deep: { focus: "Spodná a vrchná časť", reward: 25, ex: ["drepy", "kliky", "vypady", "brusaky"], time: "30 min", diet: "Telo si pýta zdravé tuky! Losos, avokádo alebo hrsť mandlí sú skvelá voľba." } 
-                },
-                { 
-                    day: "Piatok", 
-                    light: { focus: "Predvíkendový reset", reward: 10, ex: ["drepy", "plank"], time: "10 min", diet: "Zjedz večeru najneskôr 2 hodiny pred spánkom, zaručí ti to kvalitnejšiu regeneráciu." }, 
-                    deep: { focus: "HIIT Piatok", reward: 25, ex: ["jumping_jacks", "drepy", "kliky", "vypady", "brusaky"], time: "35 min", diet: "Po tomto mimoriadne ťažkom tréningu si s čistým svedomím dopraj svoje obľúbené jedlo." } 
-                },
-                { 
-                    day: "Sobota", 
-                    light: { focus: "Len tak pre seba", reward: 10, ex: ["brusaky", "plank"], time: "10 min", diet: "Cez víkend sa počítanie kalórií vypína, ale skús jesť pomaly a vychutnávať si každé sústo." }, 
-                    deep: { focus: "Sobotňajšia drina", reward: 30, ex: ["jumping_jacks", "drepy", "vypady", "plank"], time: "30 min", diet: "Ak ťa poobede chytí obrovská chuť na sladké, skús kvalitnú horkú čokoládu." } 
+            function renderRewards(data) {
+                const container = document.getElementById('rewards-gallery');
+                container.innerHTML = '';
+
+                rewardsCatalog.forEach((reward) => {
+                    const unlocked = data.balance >= reward.price;
+                    const card = document.createElement('button');
+                    card.type = 'button';
+                    card.className = `glass-card rounded-[28px] p-3 text-left relative transition-all ${unlocked ? 'reward-unlocked' : 'reward-locked'}`;
+                    card.innerHTML = `
+                        <div class="rounded-[22px] overflow-hidden aspect-[4/3] bg-stone-100 mb-3">
+                            <img src="${reward.img}" alt="${reward.title}" class="w-full h-full object-cover">
+                        </div>
+                        <div class="flex items-start justify-between gap-3">
+                            <div>
+                                <p class="text-sm font-bold text-stone-800">${reward.title}</p>
+                                <p class="text-xs mt-1 ${unlocked ? 'text-rose-500 font-bold' : 'text-stone-400'}">${reward.price} €</p>
+                            </div>
+                            <span class="text-lg">${unlocked ? '✓' : '🔒'}</span>
+                        </div>
+                    `;
+                    card.addEventListener('click', () => {
+                        openCustomMedia({
+                            type: 'image',
+                            title: reward.title,
+                            description: unlocked ? 'Túto odmenu už máš odomknutú.' : `Na túto odmenu ešte potrebuješ ${reward.price - data.balance} €.`,
+                            image: reward.img
+                        });
+                    });
+                    container.appendChild(card);
+                });
+            }
+
+            function calculateCustomReward(minutes) {
+                return Math.max(1, Math.ceil(minutes / 10));
+            }
+
+            function renderCustomExercises(data) {
+                const container = document.getElementById('custom-exercises-list');
+                container.innerHTML = '';
+
+                if (!data.customExercises.length) {
+                    container.innerHTML = '<p class="text-sm text-stone-400">Zatiaľ tu nič nie je.</p>';
+                    return;
                 }
-            ];
 
-            const getTodayDateString = () => {
-                const d = new Date();
-                return `${d.getDate()}.${d.getMonth()+1}.${d.getFullYear()}`;
-            };
+                data.customExercises.forEach((exercise) => {
+                    const card = document.createElement('div');
+                    card.className = 'rounded-[22px] border border-stone-100 bg-white p-4 flex items-center justify-between gap-3';
+                    card.innerHTML = `
+                        <div>
+                            <p class="font-bold text-stone-800">${exercise.name}</p>
+                            <p class="text-sm text-stone-500">${exercise.minutes} min · ${exercise.reward} €</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button type="button" class="btn-soft rounded-[16px] px-3 py-2 text-sm font-bold text-rose-600" data-action="complete" data-id="${exercise.id}">Splnené</button>
+                            <button type="button" class="rounded-[16px] px-3 py-2 text-sm font-bold text-stone-400 hover:text-stone-600" data-action="delete" data-id="${exercise.id}">Zmazať</button>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            }
 
-            const load = () => JSON.parse(localStorage.getItem(STORAGE_KEY));
-            const save = (data) => localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            function renderMediaHighlights() {
+                const target = document.getElementById('media-highlights');
+                target.innerHTML = '';
+                mediaLibrary.slice(1, 5).forEach((item) => {
+                    const tile = document.createElement('button');
+                    tile.type = 'button';
+                    tile.className = 'media-tile rounded-[22px] overflow-hidden bg-white border border-white/60 text-left shadow-sm';
+                    tile.innerHTML = `
+                        <div class="aspect-square overflow-hidden bg-stone-100 relative">
+                            <img src="${item.thumb}" alt="${item.title}" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent"></div>
+                            <span class="absolute top-3 right-3 text-xs font-bold uppercase tracking-[0.2em] text-white bg-black/25 px-2 py-1 rounded-full">${item.type}</span>
+                        </div>
+                        <div class="p-3">
+                            <p class="text-sm font-bold text-stone-800 leading-tight">${item.title}</p>
+                        </div>
+                    `;
+                    tile.addEventListener('click', () => openMediaItem(item.id));
+                    target.appendChild(tile);
+                });
+            }
 
-            const render = () => {
+            function renderMediaGallery() {
+                const container = document.getElementById('media-gallery');
+                container.innerHTML = '';
+
+                mediaLibrary.forEach((item) => {
+                    const tile = document.createElement('button');
+                    tile.type = 'button';
+                    tile.className = 'media-tile glass-card rounded-[28px] overflow-hidden text-left';
+                    tile.innerHTML = `
+                        <div class="aspect-[4/3] bg-stone-100 overflow-hidden relative">
+                            <img src="${item.thumb}" alt="${item.title}" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/5 to-transparent"></div>
+                            <div class="absolute bottom-4 left-4 right-4 text-white">
+                                <p class="text-xs uppercase tracking-[0.25em] font-bold mb-1">${item.type === 'video' ? 'Video' : 'Obrázok'}</p>
+                                <p class="text-xl font-bold leading-tight">${item.title}</p>
+                            </div>
+                        </div>
+                        <div class="p-5">
+                            <p class="text-sm text-stone-600">${item.description}</p>
+                        </div>
+                    `;
+                    tile.addEventListener('click', () => openMediaItem(item.id));
+                    container.appendChild(tile);
+                });
+            }
+
+            function renderPlan(data) {
+                const container = document.getElementById('weekly-plan-container');
+                container.innerHTML = '';
+                const todayIndex = (new Date().getDay() + 6) % 7;
+                const todayId = new Date().toISOString().split('T')[0];
+
+                plans.forEach((plan, index) => {
+                    const isToday = index === todayIndex;
+                    const isDone = data.completedDays.includes(todayId) && isToday;
+                    const card = document.createElement('div');
+                    card.className = `day-card glass-card rounded-[30px] p-5 md:p-6 transition-all ${isToday ? 'today' : 'locked'}`;
+
+                    let content = `
+                        <div class="flex items-center justify-between gap-3 mb-4">
+                            <div>
+                                <p class="text-xs uppercase tracking-[0.25em] text-stone-400 font-bold">${plan.day}</p>
+                                <p class="text-lg font-bold text-stone-800 mt-1">${plan.focus || `${plan.light.focus} / ${plan.deep.focus}`}</p>
+                            </div>
+                            ${isToday && !isDone ? '<span class="px-3 py-2 rounded-full bg-rose-100 text-rose-600 text-xs uppercase font-bold tracking-[0.2em]">Dnešný cieľ</span>' : ''}
+                        </div>
+                    `;
+
+                    if (isToday && !isDone && plan.light) {
+                        content += `
+                            <div class="grid md:grid-cols-2 gap-4 mb-4">
+                                <button type="button" onclick="showGuide('${plan.day}', 'light')" class="btn-soft rounded-[24px] p-4 text-left bg-gradient-to-br from-white to-rose-50">
+                                    <p class="text-xs uppercase tracking-[0.2em] text-rose-500 font-bold mb-2">Light · ${plan.light.time}</p>
+                                    <p class="font-bold text-stone-800">${plan.light.focus}</p>
+                                    <p class="text-sm text-stone-500 mt-2">Klikni a pozri si cviky, obrázky aj videá.</p>
+                                </button>
+                                <button type="button" onclick="showGuide('${plan.day}', 'deep')" class="btn-soft rounded-[24px] p-4 text-left bg-gradient-to-br from-white to-orange-50">
+                                    <p class="text-xs uppercase tracking-[0.2em] text-orange-500 font-bold mb-2">Deep · ${plan.deep.time}</p>
+                                    <p class="font-bold text-stone-800">${plan.deep.focus}</p>
+                                    <p class="text-sm text-stone-500 mt-2">Intenzívnejší plán s vyššou odmenou.</p>
+                                </button>
+                            </div>
+                            <div class="grid md:grid-cols-2 gap-3">
+                                <button type="button" onclick="completeDay(${plan.light.reward})" class="btn-soft rounded-[18px] py-3 font-bold text-rose-600">Splniť Light (+${plan.light.reward} €)</button>
+                                <button type="button" onclick="completeDay(${plan.deep.reward})" class="btn-main rounded-[18px] py-3 font-bold">Splniť Deep (+${plan.deep.reward} €)</button>
+                            </div>
+                        `;
+                    } else if (isToday && !isDone) {
+                        content += `
+                            <div class="rounded-[24px] bg-sky-50 border border-sky-100 p-5">
+                                <p class="text-sm text-stone-700">${plan.diet}</p>
+                            </div>
+                            <button type="button" onclick="completeDay(1)" class="w-full mt-4 btn-soft rounded-[18px] py-3 font-bold text-sky-700">Užiť si oddych (+1 €)</button>
+                        `;
+                    } else if (isToday && isDone) {
+                        content += `
+                            <div class="rounded-[24px] bg-emerald-50 border border-emerald-100 p-6 text-center">
+                                <div class="text-4xl mb-3">🌿</div>
+                                <p class="text-lg font-bold text-emerald-700">Dnešný tréning splnený</p>
+                                <p class="text-sm text-emerald-600 mt-2">Dnes si si to odpracovala. Zajtra pokračujeme.</p>
+                            </div>
+                        `;
+                    }
+
+                    card.innerHTML = content;
+                    container.appendChild(card);
+                });
+            }
+
+            function render() {
                 const data = load();
+
                 if (!data) {
                     document.getElementById('setup-screen').classList.remove('hidden');
                     document.getElementById('main-dashboard').classList.add('hidden');
                 } else {
-                    if (!data.weightHistory) {
-                        data.weightHistory = [{ date: getTodayDateString(), weight: data.currentWeight }];
-                        save(data);
-                    }
-                    if (!data.foodLog) {
-                        data.foodLog = [];
-                        save(data);
-                    }
-
                     document.getElementById('setup-screen').classList.add('hidden');
                     document.getElementById('main-dashboard').classList.remove('hidden');
-                    
+
                     document.getElementById('balance').textContent = data.balance;
                     document.getElementById('current-weight').textContent = data.currentWeight;
-                    
-                    const todayDayObj = new Date();
-                    const todayDayIndex = todayDayObj.getDay(); 
-                    document.getElementById('daily-quote').textContent = dailyQuotes[todayDayIndex];
-                    
+
                     renderProgressBar(data.balance);
-                    renderPlan(data, todayDayIndex);
+                    renderPlan(data);
+                    renderCustomExercises(data);
                     renderRewards(data);
-                    renderFoodLog(data);
                 }
 
-                const userConsent = localStorage.getItem(CONSENT_KEY);
+                const userConsent = loadConsent();
                 if (!userConsent) {
                     document.getElementById('cookie-banner').style.display = 'block';
-                } else if (userConsent === 'granted') {
-                    if (typeof gtag === 'function') gtag('consent', 'update', { 'analytics_storage': 'granted' });
-                }
-            };
-
-            const renderFoodLog = (data) => {
-                const gallery = document.getElementById('food-gallery');
-                gallery.innerHTML = '';
-                
-                if (!data.foodLog || data.foodLog.length === 0) {
-                    gallery.className = "grid grid-cols-3 gap-2";
-                    gallery.innerHTML = `<div class="col-span-3 text-center py-4 bg-white rounded-xl border border-gray-100 shadow-sm text-xs text-gray-400">Zatiaľ žiadna fotka. Pridaj svoj prvý tanier! 🍽️</div>`;
-                    return;
-                }
-
-                gallery.className = "space-y-4 max-h-64 overflow-y-auto custom-scrollbar pr-2";
-                
-                const dates = [...new Set(data.foodLog.map(log => log.date || 'Staršie'))].reverse();
-
-                dates.forEach(date => {
-                    let groupHtml = `<div>
-                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">${date}</p>
-                        <div class="grid grid-cols-3 gap-2">`;
-                    
-                    const logs = data.foodLog.filter(log => (log.date || 'Staršie') === date).reverse();
-                    
-                    logs.forEach(log => {
-                        if (!log.id) log.id = Math.random().toString(36).substr(2, 9);
-                        
-                        groupHtml += `
-                            <div class="w-full aspect-square rounded-xl overflow-hidden shadow-sm border border-gray-200 relative group">
-                                <img src="${log.imgBase64}" class="w-full h-full object-cover">
-                                <div class="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-[8px] text-center py-1 font-bold">${log.time}</div>
-                                <button onclick="deleteFoodLog('${log.id}')" class="absolute top-1 right-1 bg-white/90 text-rose-500 rounded-full w-6 h-6 flex items-center justify-center text-xs shadow hover:bg-rose-50 transition-colors">✖</button>
-                            </div>
-                        `;
-                    });
-                    
-                    groupHtml += `</div></div>`;
-                    gallery.innerHTML += groupHtml;
-                });
-            };
-
-            document.getElementById('food-camera-input').addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (!file) return;
-
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const img = new Image();
-                    img.onload = function() {
-                        const canvas = document.getElementById('image-compressor');
-                        const ctx = canvas.getContext('2d');
-                        
-                        const MAX_WIDTH = 400; 
-                        const scaleSize = MAX_WIDTH / img.width;
-                        canvas.width = MAX_WIDTH;
-                        canvas.height = img.height * scaleSize;
-                        
-                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        
-                        const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
-                        
-                        const data = load();
-                        const now = new Date();
-                        const timeString = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
-                        const dateString = getTodayDateString();
-                        const uniqueId = Date.now().toString();
-                        
-                        if(!data.foodLog) data.foodLog = [];
-                        data.foodLog.push({ id: uniqueId, date: dateString, time: timeString, imgBase64: dataUrl });
-                        
-                        if (data.foodLog.length > 30) data.foodLog.shift();
-                        
-                        save(data);
-                        renderFoodLog(data);
-                    }
-                    img.src = event.target.result;
-                }
-                reader.readAsDataURL(file);
-            });
-
-            const renderProgressBar = (balance) => {
-                const nextReward = rewardsCatalog.find(r => r.price > balance);
-                const progressText = document.getElementById('progress-text');
-                const progressBar = document.getElementById('progress-bar');
-                
-                if (nextReward) {
-                    document.getElementById('next-reward-title').textContent = nextReward.title;
-                    document.getElementById('next-reward-price').textContent = `${nextReward.price} €`;
-                    
-                    const percent = Math.floor((balance / nextReward.price) * 100);
-                    progressBar.style.width = `${percent}%`;
-                    
-                    const remaining = nextReward.price - balance;
-                    progressText.innerHTML = `Chýba ti <strong>${remaining}€</strong>. Zvládneš to!`;
                 } else {
-                    document.getElementById('next-reward-title').textContent = "Všetko odomknuté!";
-                    document.getElementById('next-reward-price').textContent = "🏆";
-                    progressBar.style.width = `100%`;
-                    progressText.textContent = "Nasporené máš na všetko! Si úžasná.";
+                    applyConsent(userConsent);
                 }
-            };
+            }
 
-            const renderPlan = (data, todayIdx) => {
-                const container = document.getElementById('weekly-plan-container');
-                container.innerHTML = '';
-                const todayId = new Date().toISOString().split('T')[0];
+            function openCustomMedia(item) {
+                const frame = document.getElementById('media-modal-frame');
+                document.getElementById('media-modal-type').textContent = item.type === 'video' ? 'Video obsah' : 'Obrázok';
+                document.getElementById('media-modal-title').textContent = item.title;
+                document.getElementById('media-modal-description').textContent = item.description;
 
-                const displayOrder = [1, 2, 3, 4, 5, 6, 0]; 
-
-                displayOrder.forEach(dayIndex => {
-                    const p = plans[dayIndex];
-                    const isToday = dayIndex === todayIdx;
-                    const isDone = data.completedDays.includes(todayId) && isToday;
-                    
-                    const card = document.createElement('div');
-                    card.className = `wellness-card p-5 transition-all duration-500 ${isToday ? 'today' : 'opacity-40 grayscale pointer-events-none'}`;
-                    
-                    let content = `<div class="flex justify-between items-start mb-3">
-                        <p class="text-[10px] font-bold uppercase text-gray-400 tracking-widest">${p.day}</p>
-                        ${isToday && !isDone ? '<span class="info-pill animate-pulse">Tvoja výzva na dnes</span>' : ''}
-                    </div>`;
-                    
-                    if (isToday && !isDone) {
-                        if (p.light) {
-                            content += `
-                                <div class="grid grid-cols-2 gap-3 mb-4">
-                                    <button onclick="showGuide('${p.day}', 'light')" class="p-3 border-2 border-pink-100 rounded-2xl text-left bg-gradient-to-br from-white to-pink-50 hover:border-pink-300 transition-all group shadow-sm">
-                                        <p class="text-[9px] font-bold text-pink-500 uppercase tracking-tighter mb-1 flex justify-between">LIGHT <span>${p.light.time}</span></p>
-                                        <p class="text-xs font-bold text-gray-800 leading-tight mb-2">${p.light.focus}</p>
-                                        <p class="text-[9px] text-gray-500 bg-white inline-block px-2 py-1.5 rounded shadow-sm">Ukáž tréning ➔</p>
-                                    </button>
-                                    <button onclick="showGuide('${p.day}', 'deep')" class="p-3 border-2 border-orange-100 rounded-2xl text-left bg-gradient-to-br from-white to-orange-50 hover:border-orange-300 transition-all group shadow-sm">
-                                        <p class="text-[9px] font-bold text-orange-500 uppercase tracking-tighter mb-1 flex justify-between">DEEP <span>${p.deep.time}</span></p>
-                                        <p class="text-xs font-bold text-gray-800 leading-tight mb-2">${p.deep.focus}</p>
-                                        <p class="text-[9px] text-gray-500 bg-white inline-block px-2 py-1.5 rounded shadow-sm">Ukáž tréning ➔</p>
-                                    </button>
-                                </div>
-                                <div class="flex flex-col sm:flex-row gap-2">
-                                     <button onclick="completeDay(${p.light.reward})" class="flex-1 bg-white border border-pink-200 text-pink-600 py-3.5 rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-pink-50 transition shadow-sm">Splniť Light (+${p.light.reward}€)</button>
-                                     <button onclick="completeDay(${p.deep.reward})" class="flex-1 btn-gradient py-3.5 rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-md">Splniť Deep (+${p.deep.reward}€)</button>
-                                </div>
-                            `;
-                        } else {
-                            content += `<p class="text-base font-bold text-gray-800 mb-2">${p.focus}</p>`;
-                            content += `
-                                <div class="bg-blue-50 p-4 rounded-2xl mb-4 border border-blue-100">
-                                    <p class="text-[10px] uppercase font-bold text-blue-500 mb-1 tracking-widest">Tip na voľný deň:</p>
-                                    <p class="text-sm text-gray-700 leading-relaxed">${p.diet}</p>
-                                </div>
-                            `;
-                            content += `<button onclick="completeDay(10)" class="w-full bg-blue-100 text-blue-600 py-4 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-blue-200 transition shadow-sm">Užiť si voľno (+10€)</button>`;
-                        }
-                    } else if (isToday && isDone) {
-                        content += `<div class="text-center py-6 bg-green-50 rounded-2xl border border-green-100 mt-2 shadow-inner">
-                            <div class="text-4xl mb-2">🌿</div>
-                            <p class="text-green-700 font-bold text-lg">Úloha splnená!</p>
-                            <p class="text-sm text-green-600 mt-1">Si úžasná. Pripísali sme ti eurá, bež relaxovať.</p>
-                        </div>`;
-                    } else {
-                        content += `<p class="text-sm font-bold text-gray-700">${p.focus || (p.light.focus + ' / ' + p.deep.focus)}</p>`;
-                    }
-                    
-                    card.innerHTML = content;
-                    container.appendChild(card);
-                });
-            };
-
-            const renderRewards = (data) => {
-                const container = document.getElementById('rewards-gallery');
-                container.innerHTML = '';
-                rewardsCatalog.forEach((reward, index) => {
-                    const isUnlocked = data.balance >= reward.price;
-                    const card = document.createElement('div');
-                    card.className = `wellness-card p-3 flex flex-col items-center transition-all duration-500 ${isUnlocked ? 'reward-unlocked cursor-pointer' : 'reward-locked'}`;
-                    
-                    if (isUnlocked) {
-                        card.onclick = () => openBuyRewardModal(index);
-                    }
-
-                    const statusIcon = isUnlocked 
-                        ? `<div class="absolute top-2 right-2 bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs shadow-md">✓</div>` 
-                        : `<div class="absolute top-2 right-2 bg-gray-800 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs shadow-md opacity-80">🔒</div>`;
-
-                    card.innerHTML = `
-                        <div class="w-full aspect-square rounded-2xl overflow-hidden mb-3 bg-gray-100 relative group">
-                            <img src="${reward.img}" class="w-full h-full object-cover">
-                            ${statusIcon}
-                            ${isUnlocked ? `
-                            <div class="absolute inset-0 bg-pink-500/0 group-hover:bg-pink-500/10 transition-colors flex flex-col items-center justify-center opacity-0 group-hover:opacity-100">
-                                <span class="bg-white text-pink-500 text-[10px] font-bold px-3 py-1.5 rounded-full shadow-lg border border-pink-100">Klikni a využi</span>
-                            </div>` : ''}
-                        </div>
-                        <p class="text-xs font-bold text-gray-800 text-center leading-tight mb-1">${reward.title}</p>
-                        <p class="text-[11px] ${isUnlocked ? 'text-pink-500 font-bold' : 'text-gray-400'}">${reward.price}€</p>
+                if (item.type === 'video') {
+                    frame.innerHTML = `
+                        <video
+                            class="w-full h-auto max-h-[72vh] object-contain bg-black"
+                            src="${item.video}"
+                            autoplay
+                            muted
+                            loop
+                            playsinline
+                            controls
+                        ></video>
                     `;
-                    container.appendChild(card);
-                });
-            };
+                } else {
+                    frame.innerHTML = `
+                        <img src="${item.image}" alt="${item.title}" class="w-full h-auto max-h-[72vh] object-cover">
+                    `;
+                }
 
-            const openModal = (id) => {
-                const modal = document.getElementById(id);
-                const content = document.getElementById(`${id}-content`);
-                modal.classList.remove('hidden');
-                setTimeout(() => {
-                    modal.classList.remove('opacity-0');
-                    if(content) content.classList.remove('scale-95');
-                }, 10);
-            };
+                openModal('media-modal');
+            }
 
-            const closeModal = (id) => {
-                const modal = document.getElementById(id);
-                const content = document.getElementById(`${id}-content`);
-                modal.classList.add('opacity-0');
-                if(content) content.classList.add('scale-95');
-                setTimeout(() => {
-                    modal.classList.add('hidden');
-                }, 300);
+            window.openMediaItem = (id) => {
+                const item = mediaLibrary.find((entry) => entry.id === id);
+                if (item) openCustomMedia(item);
             };
 
             window.showEx = (id) => {
-                const ex = exercises[id];
-                document.getElementById('modal-title').innerHTML = ex.title;
-                document.getElementById('modal-description').innerHTML = ex.desc;
-                
-                const imgContainer = document.getElementById('modal-image-container');
-                const imgEl = document.getElementById('modal-image');
-                if(imgContainer) imgContainer.style.display = 'block';
-                imgEl.src = ex.img;
-                
+                const exercise = exercises[id];
+                const exerciseVideoShell = document.getElementById('exercise-video-shell');
+                document.getElementById('modal-title').textContent = exercise.title;
+                document.getElementById('modal-description').textContent = exercise.desc;
+                document.getElementById('modal-image').src = exercise.img;
+                document.getElementById('modal-image').alt = exercise.title;
+
+                exerciseVideoShell.innerHTML = exercise.video
+                    ? `
+                        <video
+                            id="modal-video"
+                            class="w-full h-full object-contain bg-black"
+                            src="${exercise.video}"
+                            autoplay
+                            muted
+                            loop
+                            playsinline
+                            controls
+                        ></video>
+                    `
+                    : `
+                        <div class="w-full h-full bg-stone-950 text-white p-6 flex items-center justify-center text-center">
+                            <div class="space-y-3">
+                                <p class="text-xs uppercase tracking-[0.25em] text-rose-300 font-bold">Foto ukážka</p>
+                                <p class="text-base font-bold">Pre tento cvik zatiaľ nemáme lokálny loop klip.</p>
+                                <p class="text-sm text-stone-300">Stále máš obrázok cviku, popis techniky a časovač.</p>
+                            </div>
+                        </div>
+                    `;
+
+                const tips = document.getElementById('exercise-tips');
+                const localClipTip = exercise.video
+                    ? '<li>Krátka ukážka cviku.</li>'
+                    : '<li>Pri tomto cviku je zatiaľ len obrázok.</li>';
+                tips.innerHTML = `${localClipTip}${exercise.tips.map((tip) => `<li>${tip}</li>`).join('')}`;
+
                 resetTimer();
                 openModal('exercise-modal');
             };
 
             window.showGuide = (dayName, type) => {
-                const day = plans.find(p => p.day === dayName);
+                const day = plans.find((item) => item.day === dayName);
                 const info = day[type];
+                const theme = type === 'light'
+                    ? { box: 'bg-rose-50 border-rose-100', text: 'text-rose-500' }
+                    : { box: 'bg-orange-50 border-orange-100', text: 'text-orange-500' };
                 const content = document.getElementById('guide-content');
-                const themeColor = type === 'light' ? 'rose' : 'orange';
-                
-                document.getElementById('guide-title').textContent = `${info.focus}`;
-                
+
+                document.getElementById('guide-title').textContent = info.focus;
+
                 content.innerHTML = `
-                    <div class="space-y-5">
-                        <div class="bg-${themeColor}-50 p-5 rounded-3xl border border-${themeColor}-100 shadow-sm">
-                            <div class="flex items-center gap-3 mb-2">
-                                <span class="text-2xl">⏱️</span>
-                                <div>
-                                    <h4 class="text-[10px] font-bold text-${themeColor}-500 uppercase tracking-widest">Tvoj cieľový čas</h4>
-                                    <p class="text-base text-gray-800 font-bold">${info.time}</p>
-                                </div>
-                            </div>
-                            <p class="text-sm text-gray-700 mt-2">Daj si telefón bokom. Cviky rob za sebou (jeden okruh). Keď urobíš všetky, daj si minútu pauzu a zopakuj okruh, kým neuplynie čas.</p>
+                    <div class="grid md:grid-cols-[0.95fr_1.05fr] gap-5">
+                        <div class="rounded-[26px] ${theme.box} border p-5">
+                            <p class="text-xs uppercase tracking-[0.25em] ${theme.text} font-bold mb-2">Trvanie</p>
+                            <p class="text-2xl font-bold text-stone-800">${info.time}</p>
+                            <p class="text-sm text-stone-600 mt-3">Cviky rob pokojne za sebou.</p>
                         </div>
-                        
-                        <div class="bg-gray-50 p-5 rounded-3xl border border-gray-200 shadow-sm">
-                            <div class="flex items-center gap-3 mb-2">
-                                <span class="text-2xl">🥗</span>
-                                <h4 class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Môj tip na túto chvíľu</h4>
-                            </div>
-                            <p class="text-sm text-gray-800 leading-relaxed font-medium">${info.diet}</p>
+                        <div class="rounded-[26px] bg-stone-50 border border-stone-200 p-5">
+                            <p class="text-xs uppercase tracking-[0.25em] text-stone-400 font-bold mb-2">Výživa pre tento tréning</p>
+                            <p class="text-sm text-stone-700 leading-relaxed">${info.diet}</p>
                         </div>
-                        
-                        <div>
-                            <h4 class="text-[10px] font-bold text-gray-400 uppercase mb-3 tracking-widest pl-2">📝 Tvoje cviky (Klikni na ne pre stopky a návod)</h4>
-                            <div class="flex flex-col gap-2">
-                                ${info.ex.map(e => `
-                                    <div class="flex items-center justify-between p-4 border-2 border-gray-100 rounded-2xl bg-white cursor-pointer hover:border-${themeColor}-200 hover:shadow-md transition-all group" onclick="showEx('${e}')">
-                                        <span class="font-bold text-sm text-gray-800 group-hover:text-${themeColor}-600 transition-colors">${exercises[e].title}</span>
-                                        <span class="text-xl group-hover:scale-125 transition-transform bg-${themeColor}-50 w-10 h-10 flex items-center justify-center rounded-full">⏱️</span>
+                    </div>
+                    <div>
+                        <p class="text-xs uppercase tracking-[0.25em] text-stone-400 font-bold mb-3">Tvoje cviky</p>
+                        <div class="grid gap-3">
+                            ${info.ex.map((exerciseId) => `
+                                <button type="button" onclick="showEx('${exerciseId}')" class="btn-soft rounded-[24px] p-4 text-left bg-white flex items-center gap-4">
+                                    <img src="${exercises[exerciseId].img}" alt="${exercises[exerciseId].title}" class="w-20 h-20 rounded-[18px] object-cover shrink-0">
+                                    <div class="flex-1">
+                                        <p class="font-bold text-stone-800">${exercises[exerciseId].title}</p>
+                                        <p class="text-sm text-stone-500 mt-1">Detail cviku</p>
                                     </div>
-                                `).join('')}
-                            </div>
+                                    <span class="text-2xl text-rose-400 shrink-0">▶</span>
+                                </button>
+                            `).join('')}
                         </div>
                     </div>
                 `;
+
                 openModal('guide-modal');
             };
 
             window.completeDay = (reward) => {
                 const data = load();
                 const todayId = new Date().toISOString().split('T')[0];
+
                 if (!data.completedDays.includes(todayId)) {
                     data.balance += reward;
                     data.completedDays.push(todayId);
                     save(data);
-                    
                     closeModal('guide-modal');
-                    
-                    const duration = 3000;
-                    const end = Date.now() + duration;
+
+                    const end = Date.now() + 2200;
                     (function frame() {
-                        confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#f9a8c9', '#fbc4a0', '#d4b8e0', '#eab308'] });
-                        confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#f9a8c9', '#fbc4a0', '#d4b8e0', '#eab308'] });
+                        confetti({ particleCount: 4, angle: 60, spread: 50, origin: { x: 0 }, colors: ['#ef6f9b', '#f8b78a', '#eab308'] });
+                        confetti({ particleCount: 4, angle: 120, spread: 50, origin: { x: 1 }, colors: ['#ef6f9b', '#f8b78a', '#eab308'] });
                         if (Date.now() < end) requestAnimationFrame(frame);
                     }());
-                    
-                    setTimeout(render, 500);
+
+                    setTimeout(render, 350);
                 }
             };
 
-            window.deleteFoodLog = (id) => {
-                if(confirm('Naozaj chceš vymazať túto fotku taniera?')) {
-                    const data = load();
-                    data.foodLog = data.foodLog.filter(log => log.id !== id);
-                    save(data);
-                    renderFoodLog(data);
-                }
-            };
-
-            window.openBuyRewardModal = (index) => {
-                const reward = rewardsCatalog[index];
+            function addCustomExercise(name, minutes) {
                 const data = load();
-                if (data.balance >= reward.price) {
-                    document.getElementById('buy-reward-title').textContent = reward.title;
-                    document.getElementById('buy-reward-price').textContent = reward.price + ' €';
-                    
-                    const confirmBtn = document.getElementById('confirm-buy-btn');
-                    confirmBtn.onclick = () => {
-                        const currentData = load();
-                        if(currentData.balance >= reward.price) {
-                            currentData.balance -= reward.price;
-                            save(currentData);
-                            closeModal('buy-reward-modal');
-                            
-                            confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
-                            setTimeout(render, 300);
-                        }
-                    };
-                    
-                    openModal('buy-reward-modal');
-                }
-            };
+                const reward = calculateCustomReward(minutes);
+                data.customExercises.unshift({
+                    id: `custom-${Date.now()}`,
+                    name,
+                    minutes,
+                    reward
+                });
+                save(data);
+                render();
+            }
 
-            document.getElementById('close-buy-reward-btn').addEventListener('click', () => closeModal('buy-reward-modal'));
-            document.getElementById('cancel-buy-btn').addEventListener('click', () => closeModal('buy-reward-modal'));
-
-            document.getElementById('open-weight-modal-btn').addEventListener('click', () => {
+            function completeCustomExercise(id) {
                 const data = load();
-                document.getElementById('new-weight-input').value = data.currentWeight;
-                openModal('weight-input-modal');
-            });
+                const exercise = data.customExercises.find((item) => item.id === id);
+                if (!exercise) return;
+                data.balance += exercise.reward;
+                save(data);
+                confetti({
+                    particleCount: 35,
+                    spread: 45,
+                    origin: { y: 0.8 },
+                    colors: ['#ef6f9b', '#f8b78a', '#eab308']
+                });
+                render();
+            }
 
-            document.getElementById('close-weight-input-btn').addEventListener('click', () => closeModal('weight-input-modal'));
-
-            document.getElementById('save-weight-btn').addEventListener('click', () => {
-                const wInput = document.getElementById('new-weight-input').value.replace(',', '.');
-                const newWeight = parseFloat(wInput);
-                
-                if(!isNaN(newWeight) && newWeight > 30 && newWeight < 200) {
-                    const data = load();
-                    data.currentWeight = newWeight;
-                    
-                    if(!data.weightHistory) data.weightHistory = [];
-                    data.weightHistory.unshift({ date: getTodayDateString(), weight: newWeight }); 
-                    
-                    save(data);
-                    render();
-                    closeModal('weight-input-modal');
-                } else {
-                    alert("Prosím, zadaj platné číslo.");
-                }
-            });
-
-            document.getElementById('open-history-modal-btn').addEventListener('click', () => {
+            function deleteCustomExercise(id) {
                 const data = load();
-                const list = document.getElementById('weight-history-list');
-                list.innerHTML = '';
-                
-                if (data.weightHistory && data.weightHistory.length > 0) {
-                    data.weightHistory.forEach((item, index) => {
-                        const isStart = index === data.weightHistory.length - 1;
-                        list.innerHTML += `
-                            <div class="flex justify-between items-center p-4 bg-gray-50 rounded-2xl border ${isStart ? 'border-rose-200 bg-rose-50' : 'border-gray-100'}">
-                                <span class="text-sm text-gray-500 font-bold">${item.date} ${isStart ? '(Štart)' : ''}</span>
-                                <span class="text-lg font-bold text-gray-800">${item.weight} kg</span>
-                            </div>
-                        `;
-                    });
-                } else {
-                    list.innerHTML = `<p class="text-center text-gray-400 text-sm py-4">Zatiaľ žiadna história.</p>`;
-                }
-                openModal('weight-history-modal');
-            });
-
-            document.getElementById('close-weight-history-btn').addEventListener('click', () => closeModal('weight-history-modal'));
-            document.getElementById('close-history-footer-btn').addEventListener('click', () => closeModal('weight-history-modal'));
+                data.customExercises = data.customExercises.filter((item) => item.id !== id);
+                save(data);
+                render();
+            }
 
             document.getElementById('start-journey-btn').addEventListener('click', () => {
-                const w = parseFloat(document.getElementById('start-weight').value);
+                const weight = parseFloat(document.getElementById('start-weight').value);
                 const errorEl = document.getElementById('weight-error');
-                
-                if (isNaN(w) || w <= 0) {
-                    errorEl.textContent = 'Zadaj platnú váhu v kg.';
+
+                if (Number.isNaN(weight) || weight <= 0) {
+                    errorEl.textContent = 'Zadaj platnú váhu.';
                     errorEl.classList.remove('hidden');
-                } else {
-                    errorEl.classList.add('hidden');
-                    save({ 
-                        startWeight: w, 
-                        currentWeight: w, 
-                        balance: 0, 
-                        completedDays: [],
-                        weightHistory: [{ date: getTodayDateString(), weight: w }],
-                        foodLog: []
-                    });
-                    if (typeof gtag === 'function') gtag('event', 'started_journey');
-                    render();
+                    return;
                 }
+
+                errorEl.classList.add('hidden');
+                save({
+                    startWeight: weight,
+                    currentWeight: weight,
+                    balance: 0,
+                    completedDays: [],
+                    customExercises: []
+                });
+
+                if (typeof gtag === 'function') gtag('event', 'started_journey');
+                render();
             });
 
-            document.getElementById('accept-cookies').addEventListener('click', () => {
-                localStorage.setItem(CONSENT_KEY, 'granted');
+            document.getElementById('open-media-library-btn').addEventListener('click', () => openMediaItem('focus-flow'));
+            document.getElementById('open-media-library-btn-top').addEventListener('click', () => openMediaItem('focus-flow'));
+            btnStart.addEventListener('click', startTimer);
+            btnReset.addEventListener('click', resetTimer);
+
+            function closeConsentBanner() {
                 const banner = document.getElementById('cookie-banner');
                 banner.style.opacity = '0';
-                if (typeof gtag === 'function') {
-                    gtag('consent', 'update', { 'analytics_storage': 'granted' });
-                }
-                setTimeout(() => banner.style.display = 'none', 300);
+                setTimeout(() => { banner.style.display = 'none'; }, 250);
+            }
+
+            document.getElementById('accept-all-btn').addEventListener('click', () => {
+                const consent = {
+                    analytics: true,
+                    media: true,
+                    updatedAt: new Date().toISOString()
+                };
+                saveConsent(consent);
+                applyConsent(consent);
+                closeConsentBanner();
             });
 
-            document.getElementById('reject-cookies').addEventListener('click', () => {
-                localStorage.setItem(CONSENT_KEY, 'denied');
-                const banner = document.getElementById('cookie-banner');
-                banner.style.opacity = '0';
-                setTimeout(() => banner.style.display = 'none', 300);
+            document.getElementById('essential-only-btn').addEventListener('click', () => {
+                const consent = {
+                    analytics: false,
+                    media: false,
+                    mode: 'essential',
+                    updatedAt: new Date().toISOString()
+                };
+                saveConsent(consent);
+                applyConsent(consent);
+                closeConsentBanner();
+            });
+
+            document.getElementById('decline-all-btn').addEventListener('click', () => {
+                const consent = {
+                    analytics: false,
+                    media: false,
+                    mode: 'declined',
+                    updatedAt: new Date().toISOString()
+                };
+                saveConsent(consent);
+                applyConsent(consent);
+                closeConsentBanner();
             });
 
             document.getElementById('close-guide-btn').addEventListener('click', () => closeModal('guide-modal'));
             document.getElementById('close-guide-footer-btn').addEventListener('click', () => closeModal('guide-modal'));
-            
             document.getElementById('close-modal-btn').addEventListener('click', () => {
                 closeModal('exercise-modal');
-                clearInterval(timerInterval);
-                isRunning = false;
-                document.getElementById('modal-video').pause();
+                resetTimer();
+                stopEmbeddedMedia();
+            });
+            document.getElementById('close-media-btn').addEventListener('click', () => {
+                closeModal('media-modal');
+                stopEmbeddedMedia();
+            });
+
+            document.getElementById('exercise-modal').addEventListener('click', (event) => {
+                if (event.target.id === 'exercise-modal') {
+                    closeModal('exercise-modal');
+                    resetTimer();
+                    stopEmbeddedMedia();
+                }
+            });
+
+            document.getElementById('guide-modal').addEventListener('click', (event) => {
+                if (event.target.id === 'guide-modal') closeModal('guide-modal');
+            });
+
+            document.getElementById('media-modal').addEventListener('click', (event) => {
+                if (event.target.id === 'media-modal') {
+                    closeModal('media-modal');
+                    stopEmbeddedMedia();
+                }
             });
 
             document.getElementById('reset-btn').addEventListener('click', () => {
-                if(confirm('Upozornenie: Toto vymaže celú tvoju históriu a fiktívne úspory. Začať odznova?')) {
+                if (confirm('Vymazať celý pokrok a začať odznova?')) {
                     localStorage.removeItem(STORAGE_KEY);
                     location.reload();
                 }
             });
 
-            document.getElementById('force-update-btn').addEventListener('click', () => {
-                // Pridanie unikátneho parametra na koniec URL donúti mobil stiahnuť najnovšiu verziu
-                window.location.href = window.location.pathname + '?v=' + new Date().getTime();
+            document.getElementById('refresh-btn').addEventListener('click', async () => {
+                try {
+                    if ('serviceWorker' in navigator) {
+                        const registrations = await navigator.serviceWorker.getRegistrations();
+                        await Promise.all(registrations.map((registration) => registration.update()));
+                    }
+                } catch (error) {
+                    console.warn('Aktualizácia appky zlyhala:', error);
+                }
+
+                const url = new URL(window.location.href);
+                url.searchParams.set('updated', Date.now().toString());
+                window.location.href = url.toString();
             });
 
+            customExerciseForm.addEventListener('submit', (event) => {
+                event.preventDefault();
+                const name = customExerciseNameInput.value.trim();
+                const minutes = parseInt(customExerciseMinutesInput.value, 10);
+
+                if (!name || Number.isNaN(minutes) || minutes <= 0) return;
+
+                addCustomExercise(name, minutes);
+                customExerciseNameInput.value = '';
+                customExerciseMinutesInput.value = '';
+            });
+
+            document.getElementById('custom-exercises-list').addEventListener('click', (event) => {
+                const target = event.target.closest('button[data-action]');
+                if (!target) return;
+
+                const { action, id } = target.dataset;
+                if (action === 'complete') completeCustomExercise(id);
+                if (action === 'delete') deleteCustomExercise(id);
+            });
+
+            updateTimerDisplay();
             render();
         });
     </script>
 </body>
 </html>
+
