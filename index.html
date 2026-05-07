@@ -323,6 +323,15 @@
                             <div class="absolute -right-6 -top-6 text-6xl opacity-10">⚖️</div>
                             <p class="text-xs uppercase tracking-[0.25em] text-stone-400 font-bold mb-2">Moja váha</p>
                             <p class="text-3xl font-bold text-stone-800"><span id="current-weight">0</span> <span class="text-base font-medium text-stone-500">kg</span></p>
+                            <form id="current-weight-form" class="mt-4 space-y-2">
+                                <div class="grid grid-cols-[auto_1fr_auto] gap-2">
+                                    <button id="current-weight-decrease" type="button" class="btn-soft rounded-[16px] px-3 py-2 text-sm font-bold text-rose-600">-</button>
+                                    <input id="current-weight-input" type="text" inputmode="decimal" autocomplete="off" class="w-full rounded-[16px] border border-rose-100 bg-white px-3 py-2 text-sm font-bold text-stone-800 outline-none focus:border-rose-300" placeholder="Aktuálna váha">
+                                    <button id="current-weight-increase" type="button" class="btn-soft rounded-[16px] px-3 py-2 text-sm font-bold text-rose-600">+</button>
+                                </div>
+                                <button id="current-weight-save" type="button" class="w-full btn-soft rounded-[16px] px-4 py-2 text-sm font-bold text-rose-600">Uložiť váhu</button>
+                            </form>
+                            <p id="current-weight-status" class="mt-2 text-xs font-bold text-emerald-600 hidden">Váha uložená.</p>
                         </div>
                         <div class="stat-pill p-6 shadow-sm relative overflow-hidden">
                             <div class="absolute -right-6 -top-6 text-6xl opacity-10">💸</div>
@@ -379,7 +388,18 @@
                         <h3 class="text-2xl text-stone-800">Galéria mojich snov</h3>
                         <span class="text-xs uppercase font-bold tracking-[0.25em] text-stone-400">Odmeny</span>
                     </div>
-                    <div id="rewards-gallery" class="grid grid-cols-2 gap-4"></div>
+                    <div class="native-card p-5 space-y-4">
+                        <p class="text-sm text-stone-600">Pri fyzickej odmene stačí nahrať QR kód a uplatniť ju. Kód sa neukladá ani nekontroluje.</p>
+                        <input id="reward-claim-input" type="file" accept="image/*" capture="environment" class="hidden">
+                        <div id="rewards-gallery" class="grid gap-3"></div>
+                        <div class="pt-2 border-t border-stone-100 space-y-3">
+                            <div class="flex items-center justify-between gap-3">
+                                <h4 class="text-sm font-bold uppercase tracking-[0.22em] text-stone-400">Využité odmeny</h4>
+                                <span id="redeemed-rewards-count" class="text-xs font-bold text-stone-400">0</span>
+                            </div>
+                            <div id="redeemed-rewards-list" class="space-y-2"></div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="space-y-4">
@@ -523,6 +543,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             const STORAGE_KEY = 'wellness_gold_v3';
             const CONSENT_KEY = 'wellness_consent_preferences_v2';
+            const PHOTO_CONSENT_KEY = 'wellness_photo_journal_consent_v1';
             const GA_ID = 'G-TVOJE_ID_TU';
             const PHOTO_DB_NAME = 'wellness_photo_journal_v1';
             const PHOTO_STORE_NAME = 'photos';
@@ -532,46 +553,47 @@
                     title: '20x Drepy',
                     desc: 'Základ na zadok a stehná. Choď dole akoby si si sadala na stoličku, kolená drž stabilne a váhu prenášaj do päty.',
                     img: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1200&q=80',
-                    video: './wellness-media/squats.mp4',
+                    video: './wellness-media-github/squats.mp4',
                     tips: ['Drž hrudník otvorený a chrbát rovný.', 'Kolená smeruj v línii so špičkami.', 'Zdvih rob cez päty, nie cez prsty.']
                 },
                 kliky: {
                     title: '15x Dámske kliky',
                     desc: 'Skvelé na spevnenie rúk a hrudníka. Opri sa o kolená, zapoj brucho a pomaly spúšťaj hrudník smerom k podložke.',
                     img: 'https://images.unsplash.com/photo-1598971639058-9993af625236?auto=format&fit=crop&w=1200&q=80',
-                    video: './wellness-media/pushups.mp4',
+                    video: './wellness-media-github/pushups.mp4',
                     tips: ['Brucho maj spevnené počas celého pohybu.', 'Lakte netlač úplne od tela.', 'Choď len do rozsahu, kde držíš techniku.']
                 },
                 jumping_jacks: {
                     title: '30x Jumping Jacks',
                     desc: 'Rýchle kardio na zahriatie. Svižne rozpaž a rozkroč sa, potom sa vráť naspäť do základného postoja.',
                     img: 'https://images.unsplash.com/photo-1601422407692-ec4eeec1d9b3?auto=format&fit=crop&w=1200&q=80',
-                    video: './wellness-media/jumping-jacks.mp4',
+                    video: './wellness-media-github/jumping-jacks.mp4',
                     tips: ['Dopadaj mäkko cez stred chodidla.', 'Dýchaj pravidelne, nespomaľuj zbytočne.', 'Ramien sa nesnaž dvíhať k ušiam.']
                 },
                 plank: {
                     title: '45 sek. Plank',
                     desc: 'Cvik na pevný stred tela. Opri sa o predlaktia, zadok nedvíhaj vysoko a nenechaj ho ani padnúť.',
                     img: 'https://images.unsplash.com/photo-1518310383802-640c2de311b2?auto=format&fit=crop&w=1200&q=80',
-                    video: './wellness-media/plank.mp4',
+                    video: './wellness-media-github/plank.mp4',
                     tips: ['Predstav si rovnú líniu od hlavy po päty.', 'Ramená drž nad lakťami.', 'Dýchaj plynulo, nezadržuj dych.']
                 },
                 vypady: {
                     title: '10x Výpady na každú nohu',
                     desc: 'Výpady tvarujú nohy aj zadok. Urob dlhý krok vpred, zadné koleno smeruje k zemi a trup nechaj vzpriamený.',
                     img: 'https://images.unsplash.com/photo-1434682881908-b43d0467b798?auto=format&fit=crop&w=1200&q=80',
-                    video: './wellness-media/lunges.mp4',
+                    video: './wellness-media-github/lunges.mp4',
                     tips: ['Predné koleno netlač cez špičku.', 'Trup drž rovno, nepredkláňaj sa.', 'Tempo maj pomalé a kontrolované.']
                 },
                 brusaky: {
                     title: '20x Skracovačky',
                     desc: 'Krátky, ale účinný pohyb na brucho. Dvíhaj lopatky od podložky a nesťahuj krk rukami.',
                     img: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=1200&q=80',
-                    video: './wellness-media/crunches.mp4',
+                    video: './wellness-media-github/crunches.mp4',
                     tips: ['Bradu nechaj jemne od hrudníka.', 'Pohyb vedie brucho, nie ruky.', 'Nevychádzaj príliš vysoko, stačí kratší zdvih.']
                 }
             };
 
+            const FIT_DIARY_LINK = 'https://example.com/fit-goodnotes-diary';
             const rewardsCatalog = [
                 { title: 'Pleťová maska', price: 4, img: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=900&q=80' },
                 { title: 'Kvalitný čaj', price: 8, img: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=80' },
@@ -581,6 +603,80 @@
                 { title: 'Wellness víkend', price: 60, img: 'https://images.unsplash.com/photo-1519823551278-64ac92734fb1?auto=format&fit=crop&w=900&q=80' }
             ];
 
+            const actionableRewardsCatalog = [
+                {
+                    id: 'coffee',
+                    title: 'Káva po tréningu',
+                    price: 5,
+                    kind: 'physical',
+                    repeatable: true,
+                    proofLabel: 'Nahrať QR kód a uplatniť',
+                    description: 'Malá odmena po tréningu.',
+                    img: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=80'
+                },
+                {
+                    id: 'smoothie',
+                    title: 'Protein smoothie',
+                    price: 7,
+                    kind: 'physical',
+                    repeatable: true,
+                    proofLabel: 'Nahrať QR kód a uplatniť',
+                    description: 'Malá odmena po aktívnom dni.',
+                    img: 'https://images.unsplash.com/photo-1502741338009-cac2772e18bc?auto=format&fit=crop&w=900&q=80'
+                },
+                {
+                    id: 'face-mask',
+                    title: 'Maska na tvar',
+                    price: 9,
+                    kind: 'physical',
+                    repeatable: true,
+                    proofLabel: 'Nahrať QR kód a uplatniť',
+                    description: 'Krátky self-care reset.',
+                    img: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=900&q=80'
+                },
+                {
+                    id: 'leggings',
+                    title: 'Leginy',
+                    price: 18,
+                    kind: 'physical',
+                    repeatable: false,
+                    proofLabel: 'Nahrať QR kód a uplatniť',
+                    description: 'Nová odmena do šatníka.',
+                    img: 'https://images.unsplash.com/photo-1506629905607-d9fdd4d868d2?auto=format&fit=crop&w=900&q=80'
+                },
+                {
+                    id: 'massage',
+                    title: 'Masáž alebo wellness',
+                    price: 30,
+                    kind: 'physical',
+                    repeatable: true,
+                    proofLabel: 'Nahrať QR kód a uplatniť',
+                    description: 'Väčší reset pre telo.',
+                    img: 'https://images.unsplash.com/photo-1519823551278-64ac92734fb1?auto=format&fit=crop&w=900&q=80'
+                },
+                {
+                    id: 'shoes',
+                    title: 'Nové tenisky',
+                    price: 42,
+                    kind: 'physical',
+                    repeatable: false,
+                    proofLabel: 'Nahrať QR kód a uplatniť',
+                    description: 'Väčší cieľ do šatníka.',
+                    img: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=80'
+                },
+                {
+                    id: 'fit-diary',
+                    title: 'Fit GoodNotes Diary',
+                    price: 24,
+                    kind: 'digital',
+                    repeatable: false,
+                    ctaLabel: 'Otvoriť denník',
+                    link: FIT_DIARY_LINK,
+                    description: 'Hlavná digitálna odmena.',
+                    img: 'https://images.unsplash.com/photo-1517842645767-c639042777db?auto=format&fit=crop&w=900&q=80'
+                }
+            ];
+
             const mediaLibrary = [
                 {
                     id: 'hero-breath',
@@ -588,7 +684,7 @@
                     title: 'Drepy',
                     description: 'Krátka ukážka na rozhýbanie nôh a zadku.',
                     thumb: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1200&q=80',
-                    video: './wellness-media/squats.mp4'
+                    video: './wellness-media-github/squats.mp4'
                 },
                 {
                     id: 'focus-flow',
@@ -596,7 +692,7 @@
                     title: 'Kliky',
                     description: 'Tichá slučka, podľa ktorej si môžeš skontrolovať pohyb.',
                     thumb: 'https://images.unsplash.com/photo-1598971639058-9993af625236?auto=format&fit=crop&w=1200&q=80',
-                    video: './wellness-media/pushups.mp4'
+                    video: './wellness-media-github/pushups.mp4'
                 },
                 {
                     id: 'stretch-reset',
@@ -604,7 +700,7 @@
                     title: 'Plank',
                     description: 'Krátka lokálna ukážka planku prehrávaná priamo v appke.',
                     thumb: 'https://images.unsplash.com/photo-1518310383802-640c2de311b2?auto=format&fit=crop&w=1200&q=80',
-                    video: './wellness-media/plank.mp4'
+                    video: './wellness-media-github/plank.mp4'
                 },
                 {
                     id: 'jumping-jacks-demo',
@@ -612,7 +708,7 @@
                     title: 'Jumping Jacks',
                     description: 'Rýchle kardio na rozprúdenie energie.',
                     thumb: 'https://images.unsplash.com/photo-1601422407692-ec4eeec1d9b3?auto=format&fit=crop&w=1200&q=80',
-                    video: './wellness-media/jumping-jacks.mp4'
+                    video: './wellness-media-github/jumping-jacks.mp4'
                 },
                 {
                     id: 'lunges-demo',
@@ -620,7 +716,7 @@
                     title: 'Výpady',
                     description: 'Jemná ukážka techniky pre stabilný krok a pevné nohy.',
                     thumb: 'https://images.unsplash.com/photo-1434682881908-b43d0467b798?auto=format&fit=crop&w=1200&q=80',
-                    video: './wellness-media/lunges.mp4'
+                    video: './wellness-media-github/lunges.mp4'
                 },
                 {
                     id: 'crunches-demo',
@@ -628,7 +724,7 @@
                     title: 'Skracovačky',
                     description: 'Krátka ukážka, aby si si vedela nastaviť rozsah pohybu.',
                     thumb: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=1200&q=80',
-                    video: './wellness-media/crunches.mp4'
+                    video: './wellness-media-github/crunches.mp4'
                 }
             ];
 
@@ -679,6 +775,13 @@
             const timerDisplay = document.getElementById('timer-display');
             const btnStart = document.getElementById('timer-start');
             const btnReset = document.getElementById('timer-reset');
+            const IMAGE_FALLBACK = './icon%20(2).png';
+            const currentWeightForm = document.getElementById('current-weight-form');
+            const currentWeightInput = document.getElementById('current-weight-input');
+            const currentWeightDecreaseBtn = document.getElementById('current-weight-decrease');
+            const currentWeightIncreaseBtn = document.getElementById('current-weight-increase');
+            const currentWeightSaveBtn = document.getElementById('current-weight-save');
+            const currentWeightStatus = document.getElementById('current-weight-status');
             const customExerciseForm = document.getElementById('custom-exercise-form');
             const customExerciseNameInput = document.getElementById('custom-exercise-name');
             const customExerciseMinutesInput = document.getElementById('custom-exercise-minutes');
@@ -686,13 +789,17 @@
             const photoJournalControls = document.getElementById('photo-journal-controls');
             const photoInput = document.getElementById('photo-input');
             const photoKindInput = document.getElementById('photo-kind');
+            const photoJournalList = document.getElementById('photo-journal-list');
+            const grantPhotoConsentBtn = document.getElementById('grant-photo-consent-btn');
+            const clearPhotoJournalBtn = document.getElementById('clear-photo-journal-btn');
+            const rewardClaimInput = document.getElementById('reward-claim-input');
 
             const normalizeData = (data) => ({
                 startWeight: data?.startWeight ?? 0,
                 currentWeight: data?.currentWeight ?? data?.startWeight ?? 0,
                 balance: data?.balance ?? 0,
                 completedDays: Array.isArray(data?.completedDays) ? data.completedDays : [],
-                customExercises: Array.isArray(data?.customExercises) ? data.customExercises : []
+                redeemedRewards: Array.isArray(data?.redeemedRewards) ? data.redeemedRewards : []
             });
             const load = () => {
                 const raw = localStorage.getItem(STORAGE_KEY);
@@ -704,6 +811,8 @@
                 }
             };
             const save = (data) => localStorage.setItem(STORAGE_KEY, JSON.stringify(normalizeData(data)));
+            let sessionCustomExercises = [];
+            let pendingRewardClaimId = null;
             const loadConsent = () => {
                 const raw = localStorage.getItem(CONSENT_KEY);
                 if (!raw) return null;
@@ -714,6 +823,8 @@
                 }
             };
             const saveConsent = (consent) => localStorage.setItem(CONSENT_KEY, JSON.stringify(consent));
+            const hasPhotoConsent = () => localStorage.getItem(PHOTO_CONSENT_KEY) === 'granted';
+            const savePhotoConsent = (value) => localStorage.setItem(PHOTO_CONSENT_KEY, value ? 'granted' : 'denied');
 
             function openPhotoDb() {
                 return new Promise((resolve, reject) => {
@@ -791,6 +902,19 @@
                         reject(transaction.error);
                     };
                 });
+            }
+
+            async function createStoredPhoto(file) {
+                if (!file || !file.type.startsWith('image/')) {
+                    throw new Error('invalid-photo');
+                }
+
+                return {
+                    id: `photo-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+                    kind: photoKindInput.value || 'Fotka',
+                    createdAt: new Date().toISOString(),
+                    file
+                };
             }
 
             function ensureAnalyticsLoaded() {
@@ -906,7 +1030,7 @@
             }
 
             function renderProgressBar(balance) {
-                const nextReward = rewardsCatalog.find((item) => item.price > balance);
+                const nextReward = actionableRewardsCatalog.find((item) => item.price > balance);
                 const progressBar = document.getElementById('progress-bar');
                 const progressText = document.getElementById('progress-text');
 
@@ -966,12 +1090,12 @@
                 const container = document.getElementById('custom-exercises-list');
                 container.innerHTML = '';
 
-                if (!data.customExercises.length) {
+                if (!sessionCustomExercises.length) {
                     container.innerHTML = '<p class="text-sm text-stone-400">Zatiaľ tu nič nie je.</p>';
                     return;
                 }
 
-                data.customExercises.forEach((exercise) => {
+                sessionCustomExercises.forEach((exercise) => {
                     const card = document.createElement('div');
                     card.className = 'rounded-[22px] border border-stone-100 bg-white p-4 flex items-center justify-between gap-3';
                     card.innerHTML = `
@@ -986,6 +1110,55 @@
                     `;
                     container.appendChild(card);
                 });
+            }
+
+            function setPhotoJournalVisibility() {
+                if (hasPhotoConsent()) {
+                    photoConsentCard.classList.add('hidden');
+                    photoJournalControls.classList.remove('hidden');
+                } else {
+                    photoConsentCard.classList.remove('hidden');
+                    photoJournalControls.classList.add('hidden');
+                    photoJournalList.innerHTML = '<p class="text-sm text-stone-400">Fotky sa zobrazia po súhlase s lokálnym uložením.</p>';
+                }
+            }
+
+            async function renderPhotoJournal() {
+                setPhotoJournalVisibility();
+                if (!hasPhotoConsent()) return;
+
+                try {
+                    const entries = await loadPhotoEntries();
+                    photoJournalList.innerHTML = '';
+
+                    if (!entries.length) {
+                        photoJournalList.innerHTML = '<p class="text-sm text-stone-400">Zatiaľ tu nie sú žiadne fotky.</p>';
+                        return;
+                    }
+
+                    entries.forEach((entry) => {
+                        const objectUrl = URL.createObjectURL(entry.file);
+                        const card = document.createElement('div');
+                        card.className = 'rounded-[22px] overflow-hidden border border-stone-100 bg-white';
+                        card.innerHTML = `
+                            <div class="aspect-square bg-stone-100">
+                                <img src="${objectUrl}" alt="${entry.kind}" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-3 space-y-2">
+                                <div class="flex items-center justify-between gap-2">
+                                    <p class="text-sm font-bold text-stone-800">${entry.kind}</p>
+                                    <button type="button" class="text-xs font-bold uppercase tracking-[0.2em] text-stone-400 hover:text-stone-600" data-photo-delete="${entry.id}">Zmazať</button>
+                                </div>
+                                <p class="text-xs text-stone-400">${new Date(entry.createdAt).toLocaleDateString('sk-SK')}</p>
+                            </div>
+                        `;
+                        card.querySelector('img').addEventListener('load', () => URL.revokeObjectURL(objectUrl), { once: true });
+                        photoJournalList.appendChild(card);
+                    });
+                } catch (error) {
+                    photoJournalList.innerHTML = '<p class="text-sm text-rose-500">Fotky sa teraz nepodarilo načítať.</p>';
+                    console.warn('Načítanie foto denníka zlyhalo:', error);
+                }
             }
 
             function renderMediaHighlights() {
@@ -1111,12 +1284,15 @@
 
                     document.getElementById('balance').textContent = data.balance;
                     document.getElementById('current-weight').textContent = data.currentWeight;
+                    syncCurrentWeightInput(data.currentWeight);
 
                     renderProgressBar(data.balance);
                     renderPlan(data);
                     renderCustomExercises(data);
                     renderRewards(data);
                 }
+
+                renderPhotoJournal();
 
                 const userConsent = loadConsent();
                 if (!userConsent) {
@@ -1263,24 +1439,23 @@
             };
 
             function addCustomExercise(name, minutes) {
-                const data = load();
                 const reward = calculateCustomReward(minutes);
-                data.customExercises.unshift({
+                sessionCustomExercises.unshift({
                     id: `custom-${Date.now()}`,
                     name,
                     minutes,
                     reward
                 });
-                save(data);
                 render();
             }
 
             function completeCustomExercise(id) {
                 const data = load();
-                const exercise = data.customExercises.find((item) => item.id === id);
+                const exercise = sessionCustomExercises.find((item) => item.id === id);
                 if (!exercise) return;
                 data.balance += exercise.reward;
                 save(data);
+                sessionCustomExercises = sessionCustomExercises.filter((item) => item.id !== id);
                 confetti({
                     particleCount: 35,
                     spread: 45,
@@ -1291,10 +1466,212 @@
             }
 
             function deleteCustomExercise(id) {
-                const data = load();
-                data.customExercises = data.customExercises.filter((item) => item.id !== id);
-                save(data);
+                sessionCustomExercises = sessionCustomExercises.filter((item) => item.id !== id);
                 render();
+            }
+
+            function updateCurrentWeight(nextWeight) {
+                const data = load();
+                if (!data || Number.isNaN(nextWeight) || nextWeight <= 0) return false;
+                data.currentWeight = nextWeight;
+                save(data);
+                return true;
+            }
+
+            function syncCurrentWeightInput(value) {
+                currentWeightInput.value = Number.isFinite(value) ? String(value) : '';
+            }
+
+            function previewCurrentWeight(rawValue) {
+                const parsed = parseFloat(String(rawValue).replace(',', '.'));
+                const data = load();
+                document.getElementById('current-weight').textContent = Number.isFinite(parsed)
+                    ? parsed
+                    : (data?.currentWeight ?? 0);
+            }
+
+            function adjustCurrentWeightInput(delta) {
+                const data = load();
+                const baseValue = parseFloat(String(currentWeightInput.value || data?.currentWeight || 0).replace(',', '.'));
+                const nextValue = Math.max(1, Math.round((baseValue + delta) * 10) / 10);
+                syncCurrentWeightInput(nextValue);
+                previewCurrentWeight(nextValue);
+            }
+
+            function submitCurrentWeight() {
+                const nextWeight = parseFloat(currentWeightInput.value);
+                if (!updateCurrentWeight(nextWeight)) {
+                    alert('Zadaj platnú aktuálnu váhu.');
+                    return;
+                }
+                render();
+            }
+
+            function submitCurrentWeightSafe() {
+                const nextWeight = parseFloat(String(currentWeightInput.value).replace(',', '.'));
+                if (!updateCurrentWeight(nextWeight)) {
+                    currentWeightStatus.textContent = 'Zadaj platnú aktuálnu váhu.';
+                    currentWeightStatus.classList.remove('hidden', 'text-emerald-600');
+                    currentWeightStatus.classList.add('text-rose-500');
+                    return;
+                }
+                currentWeightStatus.textContent = 'Váha uložená.';
+                currentWeightStatus.classList.remove('hidden', 'text-rose-500');
+                currentWeightStatus.classList.add('text-emerald-600');
+                render();
+            }
+
+            function beginPhysicalRewardClaim(rewardId) {
+                pendingRewardClaimId = rewardId;
+                rewardClaimInput.click();
+            }
+
+            function findReward(rewardId) {
+                return actionableRewardsCatalog.find((reward) => reward.id === rewardId);
+            }
+
+            function getRewardRedemptions(data, rewardId) {
+                return data.redeemedRewards.filter((entry) => entry.id === rewardId);
+            }
+
+            function canRedeemReward(rewardId) {
+                const reward = findReward(rewardId);
+                const data = load();
+                if (!reward) return false;
+                if (data.balance < reward.price) return false;
+                if (!reward.repeatable && data.redeemedRewards.some((entry) => entry.id === rewardId)) return false;
+                return true;
+            }
+
+            function redeemReward(rewardId) {
+                const reward = findReward(rewardId);
+                const data = load();
+                if (!canRedeemReward(rewardId)) return false;
+
+                data.balance -= reward.price;
+                data.redeemedRewards.push({
+                    id: rewardId,
+                    redeemedAt: new Date().toISOString()
+                });
+                save(data);
+                return true;
+            }
+
+            function useReward(rewardId) {
+                if (!redeemReward(rewardId)) {
+                    alert('Na túto odmenu teraz nemáš dosť mincí alebo ju už nie je možné uplatniť.');
+                    return;
+                }
+                render();
+            }
+
+            async function openDigitalReward(rewardId) {
+                const reward = findReward(rewardId);
+                if (!reward) return;
+
+                if (!reward.link || reward.link.includes('example.com')) {
+                    alert('Sem potom vložíš svoj reálny link na Fit GoodNotes Diary.');
+                    return;
+                }
+
+                if (!redeemReward(rewardId)) {
+                    alert('Túto odmenu sa nedá uplatniť znovu alebo nemáš dosť mincí.');
+                    return;
+                }
+
+                render();
+
+                window.open(reward.link, '_blank', 'noopener,noreferrer');
+            }
+
+            function renderRewards(data) {
+                const container = document.getElementById('rewards-gallery');
+                const redeemedList = document.getElementById('redeemed-rewards-list');
+                const redeemedCount = document.getElementById('redeemed-rewards-count');
+                container.innerHTML = '';
+                redeemedList.innerHTML = '';
+
+                actionableRewardsCatalog.forEach((reward) => {
+                    const unlocked = data.balance >= reward.price;
+                    const redemptions = getRewardRedemptions(data, reward.id);
+                    const redeemedEntry = redemptions[redemptions.length - 1];
+                    const redeemed = redemptions.length > 0;
+                    const card = document.createElement('div');
+                    card.className = `rounded-[22px] border p-3 bg-white ${unlocked ? 'border-rose-100 shadow-sm' : 'border-stone-200 opacity-80'}`;
+
+                    let actionMarkup = `<p class="text-xs font-bold uppercase tracking-[0.2em] text-stone-400">Chyba ${reward.price - data.balance} €</p>`;
+                    if (reward.repeatable && redeemed) {
+                        actionMarkup = unlocked
+                            ? `<button type="button" class="btn-soft rounded-[16px] px-4 py-3 text-sm font-bold text-rose-600" data-reward-action="use" data-reward-id="${reward.id}">${reward.proofLabel}</button>`
+                            : `<p class="text-xs font-bold uppercase tracking-[0.2em] text-stone-400">Chyba ${reward.price - data.balance} €</p>`;
+                    } else if (redeemed) {
+                        actionMarkup = `<p class="text-xs font-bold uppercase tracking-[0.2em] text-emerald-600">Využité ${new Date(redeemedEntry.redeemedAt).toLocaleDateString('sk-SK')}</p>`;
+                    } else if (unlocked && reward.kind === 'digital') {
+                        actionMarkup = `<button type="button" class="btn-main rounded-[16px] px-4 py-3 text-sm font-bold" data-reward-action="open" data-reward-id="${reward.id}">${reward.ctaLabel}</button>`;
+                    } else if (unlocked) {
+                        actionMarkup = `<button type="button" class="btn-soft rounded-[16px] px-4 py-3 text-sm font-bold text-rose-600" data-reward-action="use" data-reward-id="${reward.id}">${reward.proofLabel}</button>`;
+                    }
+
+                    card.innerHTML = `
+                        <div class="flex gap-3 items-center">
+                            <div class="w-20 h-20 rounded-[16px] overflow-hidden bg-stone-100 shrink-0">
+                                <img src="${reward.img}" alt="${reward.title}" class="w-full h-full object-cover">
+                            </div>
+                            <div class="flex-1 space-y-1">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div>
+                                        <p class="text-sm font-bold text-stone-800">${reward.title}</p>
+                                        <p class="text-xs ${unlocked ? 'text-rose-500 font-bold' : 'text-stone-400'}">${reward.price} €</p>
+                                        ${redeemed ? `<p class="text-[11px] text-stone-400 mt-1">${reward.repeatable ? `${redemptions.length}x využité` : `Využité`}</p>` : ''}
+                                    </div>
+                                    <span class="text-[11px] uppercase tracking-[0.2em] font-bold ${reward.kind === 'digital' ? 'text-sky-500' : 'text-stone-400'}">${reward.kind === 'digital' ? 'Link' : 'Odmena'}</span>
+                                </div>
+                                <div class="flex items-center justify-between gap-3 pt-1">
+                                    ${actionMarkup}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    container.appendChild(card);
+                });
+
+                const groupedRedemptions = actionableRewardsCatalog
+                    .map((reward) => {
+                        const entries = getRewardRedemptions(data, reward.id);
+                        return entries.length
+                            ? {
+                                reward,
+                                count: entries.length,
+                                lastUsed: entries[entries.length - 1].redeemedAt
+                            }
+                            : null;
+                    })
+                    .filter(Boolean)
+                    .sort((a, b) => new Date(b.lastUsed) - new Date(a.lastUsed));
+
+                redeemedCount.textContent = String(data.redeemedRewards.length);
+
+                if (!groupedRedemptions.length) {
+                    redeemedList.innerHTML = '<p class="text-sm text-stone-400">Zatiaľ nič.</p>';
+                    return;
+                }
+
+                groupedRedemptions.forEach(({ reward, count, lastUsed }) => {
+                    const item = document.createElement('div');
+                    item.className = 'rounded-[18px] border border-stone-100 bg-stone-50 px-3 py-3 flex items-center justify-between gap-3';
+                    item.innerHTML = `
+                        <div>
+                            <p class="text-sm font-bold text-stone-800">${reward.title}</p>
+                            <p class="text-xs text-stone-400">${new Date(lastUsed).toLocaleDateString('sk-SK')}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm font-bold text-rose-500">${count}x</p>
+                            <p class="text-[11px] uppercase tracking-[0.2em] text-stone-400">využité</p>
+                        </div>
+                    `;
+                    redeemedList.appendChild(item);
+                });
             }
 
             document.getElementById('start-journey-btn').addEventListener('click', () => {
@@ -1313,7 +1690,7 @@
                     currentWeight: weight,
                     balance: 0,
                     completedDays: [],
-                    customExercises: []
+                    redeemedRewards: []
                 });
 
                 if (typeof gtag === 'function') gtag('event', 'started_journey');
@@ -1431,6 +1808,53 @@
                 customExerciseMinutesInput.value = '';
             });
 
+            currentWeightForm.addEventListener('submit', (event) => {
+                event.preventDefault();
+                const nextWeight = parseFloat(currentWeightInput.value);
+                if (!updateCurrentWeight(nextWeight)) {
+                    alert('Zadaj platnú aktuálnu váhu.');
+                    return;
+                }
+                render();
+            });
+
+            currentWeightSaveBtn.addEventListener('click', (event) => {
+                event.preventDefault();
+                submitCurrentWeight();
+            });
+
+            grantPhotoConsentBtn.addEventListener('click', () => {
+                savePhotoConsent(true);
+                renderPhotoJournal();
+            });
+
+            photoInput.addEventListener('change', async (event) => {
+                const [file] = event.target.files || [];
+                if (!file) return;
+
+                try {
+                    const entry = await createStoredPhoto(file);
+                    await savePhotoEntry(entry);
+                    await renderPhotoJournal();
+                } catch (error) {
+                    console.warn('Ulozenie fotky zlyhalo:', error);
+                    alert('Fotku sa teraz nepodarilo ulozit len do zariadenia.');
+                } finally {
+                    photoInput.value = '';
+                }
+            });
+
+            clearPhotoJournalBtn.addEventListener('click', async () => {
+                if (!confirm('Vymazat vsetky fotky z tohto zariadenia?')) return;
+
+                try {
+                    await clearAllPhotoEntries();
+                    await renderPhotoJournal();
+                } catch (error) {
+                    console.warn('Mazanie foto dennika zlyhalo:', error);
+                }
+            });
+
             document.getElementById('custom-exercises-list').addEventListener('click', (event) => {
                 const target = event.target.closest('button[data-action]');
                 if (!target) return;
@@ -1440,10 +1864,103 @@
                 if (action === 'delete') deleteCustomExercise(id);
             });
 
+            document.getElementById('rewards-gallery').addEventListener('click', async (event) => {
+                const target = event.target.closest('button[data-reward-action]');
+                if (!target) return;
+
+                const { rewardAction, rewardId } = target.dataset;
+                if (rewardAction === 'open') {
+                    await openDigitalReward(rewardId);
+                    return;
+                }
+
+                if (rewardAction === 'use') {
+                    useReward(rewardId);
+                }
+            });
+
+            photoJournalList.addEventListener('click', async (event) => {
+                const target = event.target.closest('button[data-photo-delete]');
+                if (!target) return;
+
+                try {
+                    await deletePhotoEntry(target.dataset.photoDelete);
+                    await renderPhotoJournal();
+                } catch (error) {
+                    console.warn('Mazanie fotky zlyhalo:', error);
+                }
+            });
+
+            function finalizePhysicalRewardClaim(rewardId) {
+                if (!redeemReward(rewardId)) {
+                    alert('Na túto odmenu teraz nemáš dosť mincí alebo ju už nie je možné využiť.');
+                    return;
+                }
+                confetti({
+                    particleCount: 40,
+                    spread: 50,
+                    origin: { y: 0.75 },
+                    colors: ['#ef6f9b', '#f8b78a', '#eab308']
+                });
+                render();
+            }
+
+            function useReward(rewardId) {
+                pendingRewardClaimId = rewardId;
+                rewardClaimInput.click();
+            }
+
+            currentWeightForm.onsubmit = (event) => {
+                event.preventDefault();
+                submitCurrentWeightSafe();
+            };
+
+            currentWeightSaveBtn.onclick = (event) => {
+                event.preventDefault();
+                submitCurrentWeightSafe();
+            };
+
+            currentWeightDecreaseBtn.onclick = (event) => {
+                event.preventDefault();
+                adjustCurrentWeightInput(-0.1);
+            };
+
+            currentWeightIncreaseBtn.onclick = (event) => {
+                event.preventDefault();
+                adjustCurrentWeightInput(0.1);
+            };
+
+            currentWeightInput.onclick = () => {
+                currentWeightInput.select();
+            };
+
+            currentWeightInput.oninput = () => {
+                previewCurrentWeight(currentWeightInput.value);
+            };
+
+            document.addEventListener('error', (event) => {
+                const target = event.target;
+                if (!(target instanceof HTMLImageElement)) return;
+                if (target.dataset.fallbackApplied === 'true') return;
+
+                target.dataset.fallbackApplied = 'true';
+                target.src = IMAGE_FALLBACK;
+                target.classList.add('object-contain', 'p-3', 'bg-stone-50');
+            }, true);
+
+            rewardClaimInput.onchange = (event) => {
+                const [file] = event.target.files || [];
+                const rewardId = pendingRewardClaimId;
+                pendingRewardClaimId = null;
+                rewardClaimInput.value = '';
+
+                if (!file || !rewardId) return;
+                finalizePhysicalRewardClaim(rewardId);
+            };
+
             updateTimerDisplay();
             render();
         });
     </script>
 </body>
 </html>
-
