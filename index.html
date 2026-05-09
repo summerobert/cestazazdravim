@@ -89,24 +89,6 @@
             position: relative;
         }
 
-        .phone-topbar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0.85rem 1.1rem 0.4rem;
-            font-size: 0.78rem;
-            font-weight: 700;
-            color: #6b5565;
-        }
-
-        .phone-island {
-            width: 7.5rem;
-            height: 1.6rem;
-            border-radius: 999px;
-            background: rgba(34, 22, 33, 0.92);
-            margin: 0 auto;
-        }
-
         .hero-panel {
             background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,245,249,0.92));
             border: 1px solid rgba(239, 111, 155, 0.08);
@@ -268,14 +250,9 @@
 <body class="p-4 md:p-8 lg:p-10 safe-bottom">
     <a href="#main-content" class="skip-link">Preskočiť na obsah</a>
     <div class="app-shell">
-        <div class="phone-topbar">
-            <span>9:41</span>
-            <div class="phone-island" aria-hidden="true"></div>
-            <span>100%</span>
-        </div>
         <section class="hero-panel rounded-[34px] mx-3 mt-2 p-6 overflow-hidden fade-in">
             <div class="space-y-5">
-                <div class="flex items-start justify-between gap-4">
+                <div class="flex items-start gap-4">
                     <div class="flex items-center gap-4">
                         <img src="./assets/images/flower-icon.png" alt="Kvet wellness denníka" class="w-16 h-16 rounded-[20px] bg-white/70 p-2 shadow-sm">
                         <div>
@@ -283,7 +260,6 @@
                             <h1 class="text-3xl text-stone-800 leading-tight mt-2">Dnes stačí urobiť malý krok pre seba.</h1>
                         </div>
                     </div>
-                    <button id="open-media-library-btn-top" class="btn-soft rounded-[18px] px-4 py-3 text-sm font-bold text-rose-600 shrink-0">Ukážky</button>
                 </div>
                 <p class="text-sm text-stone-600 leading-relaxed">Vyber si tempo a začni.</p>
             </div>
@@ -558,8 +534,8 @@
                     tips: ['Drž hrudník otvorený a chrbát rovný.', 'Kolená smeruj v línii so špičkami.', 'Zdvih rob cez päty, nie cez prsty.']
                 },
                 kliky: {
-                    title: '15x Dámske kliky',
-                    desc: 'Skvelé na spevnenie rúk a hrudníka. Opri sa o kolená, zapoj brucho a pomaly spúšťaj hrudník smerom k podložke.',
+                    title: '15x Kliky',
+                    desc: 'Skvelé na spevnenie rúk a hrudníka. Môžeš ísť z kolien alebo z dosky, dôležitý je pevný stred tela a plynulý pohyb.',
                     img: LOCAL_MEDIA_IMAGE,
                     video: './assets/videos/pushups.mp4',
                     tips: ['Brucho maj spevnené počas celého pohybu.', 'Lakte netlač úplne od tela.', 'Choď len do rozsahu, kde držíš techniku.']
@@ -1699,7 +1675,10 @@
             });
 
             document.getElementById('open-media-library-btn').addEventListener('click', () => openMediaItem('focus-flow'));
-            document.getElementById('open-media-library-btn-top').addEventListener('click', () => openMediaItem('focus-flow'));
+            const openMediaLibraryBtnTop = document.getElementById('open-media-library-btn-top');
+            if (openMediaLibraryBtnTop) {
+                openMediaLibraryBtnTop.addEventListener('click', () => openMediaItem('focus-flow'));
+            }
             btnStart.addEventListener('click', startTimer);
             btnReset.addEventListener('click', resetTimer);
 
@@ -1965,3 +1944,4 @@
     </script>
 </body>
 </html>
+
